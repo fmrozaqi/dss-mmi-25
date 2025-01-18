@@ -1,8 +1,9 @@
 "use client";
-import { useDSSInput } from "@/components/hooks/useDSSInput";
+import { DSSInput } from "@/components/DSSInput";
+import { useDSSInput } from "@/hooks/useDSSInput";
 
 export default function WpPage() {
-  const { Component: InputDSS } = useDSSInput();
+  const dss = useDSSInput();
 
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center p-8 pb-20 gap-16 font-[family-name:var(--font-geist-sans)]">
@@ -10,7 +11,16 @@ export default function WpPage() {
         <div className="text-2xl text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
           Weighted Product (WP) Content
         </div>
-        <InputDSS />
+        <DSSInput
+          criterias={dss.criterias}
+          alternatives={dss.alternatives}
+          addCriteria={dss.addCriteria}
+          updateCriterias={dss.updateCriterias}
+          deleteCriteria={dss.deleteCriteria}
+          addAlternative={dss.addAlternative}
+          updateAlternatives={dss.updateAlternatives}
+          deleteAlternative={dss.deleteAlternative}
+        />
       </main>
     </div>
   );

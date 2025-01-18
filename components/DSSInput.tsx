@@ -1,71 +1,27 @@
-import { useState } from "react";
+import { Alternative, Criteria, Key } from "@/types/DSSType";
 
-type Key = "name" | "weight" | "type";
+interface DSSInputProps {
+  criterias: Criteria[];
+  alternatives: Alternative[];
+  addCriteria: () => void;
+  updateCriterias: (index: number, key: Key, value: string) => void;
+  deleteCriteria: (deleteIndex: number) => void;
+  addAlternative: () => void;
+  updateAlternatives: (index: number, key: string, value: string) => void;
+  deleteAlternative: (deleteIndex: number) => void;
+}
 
-export const useDSSInput = () => {
-  const [criterias, setCriterias] = useState([
-    { name: "", weight: 0, type: "benefit" },
-  ]);
-
-  const [alternatives, setAlternatives] = useState<
-    { name: string; score: number[] }[]
-  >([{ name: "", score: [0] }]);
-
-  const resetAlternatives = (index?: number) => {
-    alternatives.map((alternative) => {
-      if (index !== undefined) {
-        alternative.score.splice(index, 1);
-      } else {
-        alternative.score.push(0);
-      }
-    });
-    setAlternatives(alternatives);
-  };
-
-  const addCriteria = () => {
-    setCriterias([...criterias, { name: "", weight: 0, type: "benefit" }]);
-    resetAlternatives();
-  };
-
-  const updateCriterias = (index: number, key: Key, value: string) => {
-    const newCriterias = [...criterias];
-    if (key === "weight") {
-      newCriterias[index][key] = parseInt(value);
-    } else {
-      newCriterias[index][key] = value;
-    }
-    setCriterias(newCriterias);
-  };
-
-  const deleteCriteria = (deleteIndex: number) => {
-    const newCriterias = criterias.filter((_, index) => index !== deleteIndex);
-    setCriterias(newCriterias);
-    resetAlternatives(deleteIndex);
-  };
-
-  const addAlternative = () => {
-    const score = new Array(criterias.length).fill(0);
-    setAlternatives([...alternatives, { name: "", score }]);
-  };
-
-  const deleteAlternative = (deleteIndex: number) => {
-    const newAlternatives = alternatives.filter(
-      (_, index) => index !== deleteIndex
-    );
-    setAlternatives(newAlternatives);
-  };
-
-  const updateAlternatives = (index: number, key: string, value: string) => {
-    const newAlternatives = [...alternatives];
-    if (key === "name") {
-      newAlternatives[index][key] = value;
-    } else {
-      newAlternatives[index]["score"][parseInt(key)] = parseInt(value);
-    }
-    setAlternatives(newAlternatives);
-  };
-
-  const Component = () => (
+export const DSSInput = ({
+  criterias,
+  alternatives,
+  addCriteria,
+  updateCriterias,
+  deleteCriteria,
+  addAlternative,
+  updateAlternatives,
+  deleteAlternative,
+}: DSSInputProps) => {
+  return (
     <div>
       <h1 className="pb-4">Criterias Input Form</h1>
       {criterias.map((weight, index) => (
@@ -194,6 +150,4 @@ export const useDSSInput = () => {
       </button>
     </div>
   );
-
-  return { Component, criterias, alternatives };
 };
