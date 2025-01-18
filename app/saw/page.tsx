@@ -1,8 +1,6 @@
 "use client";
 import { useDSSInput } from "@/components/hooks/useDSSInput";
 
-type Key = "name" | "weight" | "type";
-
 export default function SawPage() {
   const { Component: InputDSS } = useDSSInput();
 
