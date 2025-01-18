@@ -12,17 +12,20 @@ export default function SawPage() {
     { name: string; score: number[] }[]
   >([{ name: "test", score: [0] }]);
 
-  const resetAlternatives = (length: number) => {
+  const resetAlternatives = (index?: number) => {
     alternatives.map((alternative) => {
-      alternative["score"].length = length;
-      alternative["score"].fill(0);
+      if (index !== undefined) {
+        alternative.score.splice(index, 1);
+      } else {
+        alternative.score.push(0);
+      }
     });
     setAlternatives(alternatives);
   };
 
   const addCriteria = () => {
     setCriterias([...criterias, { name: "", weight: 0, type: "benefit" }]);
-    resetAlternatives(criterias.length + 1);
+    resetAlternatives();
   };
 
   const updateCriterias = (index: number, key: Key, value: string) => {
@@ -38,7 +41,7 @@ export default function SawPage() {
   const deleteCriteria = (deleteIndex: number) => {
     const newCriterias = criterias.filter((_, index) => index !== deleteIndex);
     setCriterias(newCriterias);
-    resetAlternatives(criterias.length - 1);
+    resetAlternatives(deleteIndex);
   };
 
   const addAlternative = () => {
@@ -53,15 +56,15 @@ export default function SawPage() {
     setAlternatives(newAlternatives);
   };
 
-  // const updateAlternatives = (index: number, key: string, value: string) => {
-  //   const newCriterias = [...criterias];
-  //   if (key === "weight") {
-  //     newCriterias[index][key] = parseInt(value);
-  //   } else {
-  //     newCriterias[index][key] = value;
-  //   }
-  //   setCriterias(newCriterias);
-  // };
+  const updateAlternatives = (index: number, key: string, value: string) => {
+    const newAlternatives = [...alternatives];
+    if (key === "name") {
+      newAlternatives[index][key] = value;
+    } else {
+      newAlternatives[index]["score"][parseInt(key)] = parseInt(value);
+    }
+    setAlternatives(newAlternatives);
+  };
 
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center p-8 pb-20 gap-16 font-[family-name:var(--font-geist-sans)]">
@@ -173,7 +176,18 @@ export default function SawPage() {
                       key={colIdx}
                       className="border border-gray-300 px-4 py-2"
                     >
-                      {alternative.score[colIdx]}
+                      <input
+                        type="number"
+                        value={alternative["score"][colIdx]}
+                        onChange={(e) =>
+                          updateAlternatives(
+                            idx,
+                            colIdx.toString(),
+                            e.target.value
+                          )
+                        }
+                        className="mx-1 text-background p-1 w-20"
+                      />
                     </td>
                   ))}
                   <td
