@@ -33,10 +33,10 @@ export default function SawPage() {
       result.push(normalizedRow);
     });
     return result;
-  }, [alternatives]);
+  }, [alternatives, criterias]);
 
   const normalizedWeight: number[] = useMemo(() => {
-    var sum = 0;
+    let sum = 0;
     criterias.forEach((criteria) => {
       sum += criteria.weight;
     });
@@ -50,7 +50,7 @@ export default function SawPage() {
   const finalScore: number[] = useMemo(() => {
     const result: number[] = [];
     normalizedMatrix.forEach((normalizedRow) => {
-      var score = 0;
+      let score = 0;
       normalizedRow.forEach((value, idx) => {
         score += value * normalizedWeight[idx];
       });
@@ -60,9 +60,9 @@ export default function SawPage() {
   }, [normalizedMatrix, normalizedWeight]);
 
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center p-8 pb-20 gap-16 font-[family-name:var(--font-geist-sans)]">
+    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center p-8 pb-20 gap-16 font-[family-name:let(--font-geist-sans)]">
       <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <div className="text-2xl text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
+        <div className="text-2xl text-center sm:text-left font-[family-name:let(--font-geist-mono)]">
           Simple Additive Weighting (SAW) Content
         </div>
         <DSSInput
@@ -80,13 +80,17 @@ export default function SawPage() {
             <div key={`row${idxRow}`} className="flex flex-row">
               {row.map((value, idx) => (
                 <div key={`${idxRow}-${idx}`} className="me-2">
-                  {value ? value : "NaN"}
+                  {value}
                 </div>
               ))}
             </div>
           ))}
         </div>
-        <div>{finalScore}</div>
+        <div>
+          {finalScore.map((val, idx) => (
+            <div key={idx}>{val}</div>
+          ))}
+        </div>
       </main>
     </div>
   );
