@@ -32,7 +32,7 @@ export const DSSInput = ({
               type="text"
               value={weight.name}
               onChange={(e) => updateCriterias(index, "name", e.target.value)}
-              className="mx-1 text-background p-1"
+              className="mx-1 p-1 border text-black"
             />
           </label>
           <label>
@@ -41,7 +41,7 @@ export const DSSInput = ({
               type="number"
               value={weight.weight}
               onChange={(e) => updateCriterias(index, "weight", e.target.value)}
-              className="mx-1 text-background p-1 w-20"
+              className="mx-1 p-1 w-20 border text-black"
             />
           </label>
           <div className="ps-3 grid gap-2 grid-cols-2">
@@ -85,17 +85,23 @@ export const DSSInput = ({
       <table className="my-4 table-auto border-collapse border border-gray-300 w-full text-center">
         <thead>
           <tr className="bg-[#222]">
-            <th key="alternative" className="border border-black-300 px-4 py-2">
+            <th
+              key="alternative"
+              className="border border-black-300 px-4 py-2 text-white"
+            >
               Alternative
             </th>
             {criterias.map((weight, idx) => (
-              <th key={idx} className="border border-black-300 px-4 py-2">
+              <th
+                key={idx}
+                className="border border-black-300 px-4 py-2 text-white"
+              >
                 c{idx + 1}
               </th>
             ))}
             <th
               key={"action"}
-              className="border border-black-300 px-4 py-2 w-20"
+              className="border border-black-300 px-4 py-2 w-20 text-white"
             >
               Action
             </th>
@@ -111,7 +117,7 @@ export const DSSInput = ({
                   onChange={(e) =>
                     updateAlternatives(idx, "name", e.target.value)
                   }
-                  className="mx-1 text-background p-1"
+                  className="mx-1 p-1 border text-black"
                 />
               </td>
               {Array.from({ length: criterias.length }, (_, colIdx) => (
@@ -122,14 +128,11 @@ export const DSSInput = ({
                     onChange={(e) =>
                       updateAlternatives(idx, colIdx.toString(), e.target.value)
                     }
-                    className="mx-1 text-background p-1 w-20"
+                    className="mx-1 p-1 w-20 border text-black"
                   />
                 </td>
               ))}
-              <td
-                key={`a${idx}-delete`}
-                className="border border-gray-300 px-4 py-2"
-              >
+              <td key={`a${idx}-delete`} className="border px-4 py-2">
                 <button
                   onClick={() => {
                     deleteAlternative(idx);
