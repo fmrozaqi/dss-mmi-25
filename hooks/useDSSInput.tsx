@@ -3,11 +3,11 @@ import { useState } from "react";
 
 export const useDSSInput = () => {
   const [criterias, setCriterias] = useState<Criteria[]>([
-    { name: "", weight: 0, type: "benefit" },
+    { name: "", weight: 1, type: "benefit" },
   ]);
 
   const [alternatives, setAlternatives] = useState<Alternative[]>([
-    { name: "", score: [0] },
+    { name: "", score: [1] },
   ]);
 
   const resetAlternatives = (index?: number) => {
@@ -15,14 +15,14 @@ export const useDSSInput = () => {
       if (index !== undefined) {
         alternative.score.splice(index, 1);
       } else {
-        alternative.score.push(0);
+        alternative.score.push(1);
       }
     });
     setAlternatives(alternatives);
   };
 
   const addCriteria = () => {
-    setCriterias([...criterias, { name: "", weight: 0, type: "benefit" }]);
+    setCriterias([...criterias, { name: "", weight: 1, type: "benefit" }]);
     resetAlternatives();
   };
 
@@ -43,7 +43,7 @@ export const useDSSInput = () => {
   };
 
   const addAlternative = () => {
-    const score = new Array(criterias.length).fill(0);
+    const score = new Array(criterias.length).fill(1);
     setAlternatives([...alternatives, { name: "", score }]);
   };
 

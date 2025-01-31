@@ -2,6 +2,13 @@
 import { DSSInput } from "@/components/DSSInput";
 import { useDSSInput } from "@/hooks/useDSSInput";
 import { useMemo } from "react";
+import { MathJax, MathJaxContext } from "better-react-mathjax";
+import {
+  convertToArrayOfArrays,
+  formatMatrixNormalization,
+  formatWeight,
+  matrixExpression,
+} from "@/libs/lib";
 
 export default function SawPage() {
   const dss = useDSSInput();
@@ -76,20 +83,34 @@ export default function SawPage() {
           deleteAlternative={dss.deleteAlternative}
         />
         <div>
-          {normalizedMatrix.map((row, idxRow) => (
-            <div key={`row${idxRow}`} className="flex flex-row">
-              {row.map((value, idx) => (
-                <div key={`${idxRow}-${idx}`} className="me-2">
-                  {value}
-                </div>
-              ))}
+          <MathJaxContext>
+            <div>
+              <h2>Normalized Matrix</h2>
+              <MathJax>
+                {matrixExpression(formatMatrixNormalization(normalizedMatrix))}
+              </MathJax>
             </div>
-          ))}
+          </MathJaxContext>
         </div>
         <div>
-          {finalScore.map((val, idx) => (
-            <div key={idx}>{val}</div>
-          ))}
+          <MathJaxContext>
+            <div>
+              <h2>Normalized Weight</h2>
+              <MathJax>
+                {matrixExpression(formatWeight(normalizedWeight))}
+              </MathJax>
+            </div>
+          </MathJaxContext>
+        </div>
+        <div>
+          <MathJaxContext>
+            <div>
+              <h2>Final Score</h2>
+              <MathJax>
+                {matrixExpression(convertToArrayOfArrays(finalScore))}
+              </MathJax>
+            </div>
+          </MathJaxContext>
         </div>
       </main>
     </div>
