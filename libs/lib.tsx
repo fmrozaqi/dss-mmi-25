@@ -1,3 +1,5 @@
+import { IdealSolution } from "@/app/topsis/page";
+
 export function formatArray(input: string[][]): string {
   return input
     .map((row, index) => {
@@ -46,4 +48,16 @@ export function formatWeight(input: number[]): string[][] {
   });
   const formattedWeight = input.map((num) => num.toFixed(3).toString());
   return [header, formattedWeight];
+}
+
+export function formatIdealSolution(input: IdealSolution[]): string[][] {
+  const header: string[] = [];
+  input.forEach((_, idx) => {
+    header.push(`d${idx + 1}`);
+  });
+  const formattedISBest = input.map((is) => `+: \\ ${is.bestCase.toFixed(3)}`);
+  const formattedISWorst = input.map(
+    (is) => `-: \\ ${is.worstCase.toFixed(3)}`
+  );
+  return [header, formattedISBest, formattedISWorst];
 }

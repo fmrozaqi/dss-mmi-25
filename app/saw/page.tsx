@@ -97,15 +97,15 @@ export default function SawPage() {
         <div className="flex flex-col items-center justify-center w-full">
           <MathJaxContext renderMode="post">
             <div className="mb-5">
-              <MathJax>{"\\[ Normalized \\ Matrix \\]"}</MathJax>
-              <MathJax dynamic>
-                {matrixExpression(formatMatrixNormalization(normalizedMatrix))}
-              </MathJax>
-            </div>
-            <div className="mb-5">
               <MathJax>{"\\[ Normalized \\ Weight \\]"}</MathJax>
               <MathJax dynamic>
                 {matrixExpression(formatWeight(normalizedWeight))}
+              </MathJax>
+            </div>
+            <div className="mb-5">
+              <MathJax>{"\\[ Normalized \\ Matrix \\]"}</MathJax>
+              <MathJax dynamic>
+                {matrixExpression(formatMatrixNormalization(normalizedMatrix))}
               </MathJax>
             </div>
             <div className="mb-5">

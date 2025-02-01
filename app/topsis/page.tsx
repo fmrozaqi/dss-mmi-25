@@ -1,9 +1,18 @@
 "use client";
 import { DSSInput } from "@/components/DSSInput";
 import { useDSSInput } from "@/hooks/useDSSInput";
+import {
+  convertToArrayOfArrays,
+  convertToRank,
+  formatIdealSolution,
+  formatMatrixNormalization,
+  formatWeight,
+  matrixExpression,
+} from "@/libs/lib";
+import { MathJax, MathJaxContext } from "better-react-mathjax";
 import { useMemo } from "react";
 
-type IdealSolution = {
+export type IdealSolution = {
   bestCase: number;
   worstCase: number;
 };
@@ -110,6 +119,17 @@ export default function TopsisPage() {
     return result;
   }, [weightedNormalizedMatrix, idealSolutions]);
 
+  const ranks: number[] = useMemo(() => {
+    const sortedIndices = [...closenessIdealSolutions.keys()].sort(
+      (a, b) => closenessIdealSolutions[b] - closenessIdealSolutions[a]
+    );
+    const result: number[] = [];
+    sortedIndices.forEach((originalIndex, rank) => {
+      result[originalIndex] = rank + 1; // Rank starts from 1
+    });
+    return result;
+  }, [closenessIdealSolutions]);
+
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center p-8 pb-20 gap-16 font-[family-name:let(--font-geist-sans)]">
       <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
@@ -127,31 +147,49 @@ export default function TopsisPage() {
           updateAlternatives={dss.updateAlternatives}
           deleteAlternative={dss.deleteAlternative}
         />
-        <div>
-          {weightedNormalizedMatrix.map((row, idxRow) => (
-            <div key={`row${idxRow}`} className="flex flex-row">
-              {row.map((value, idx) => (
-                <div key={`${idxRow}-${idx}`} className="me-2">
-                  {value}
-                </div>
-              ))}
+        <div className="flex flex-col items-center justify-center w-full">
+          <MathJaxContext renderMode="post">
+            <div className="mb-5">
+              <MathJax>{"\\[ Normalized \\ Weight \\]"}</MathJax>
+              <MathJax dynamic>
+                {matrixExpression(formatWeight(normalizedWeight))}
+              </MathJax>
             </div>
-          ))}
-        </div>
-        <div>
-          {idealSolutions.map((value, idxRow) => (
-            <div key={`row${idxRow}`} className="flex flex-row">
-              {"bestcase: " +
-                value.bestCase +
-                ", worstcase: " +
-                value.worstCase}
+            <div className="mb-5">
+              <MathJax>{"\\[ Normalized \\ Matrix \\]"}</MathJax>
+              <MathJax dynamic>
+                {matrixExpression(formatMatrixNormalization(normalizedMatrix))}
+              </MathJax>
             </div>
-          ))}
-        </div>
-        <div>
-          {closenessIdealSolutions.map((val, idx) => (
-            <div key={idx}>{val}</div>
-          ))}
+            <div className="mb-5">
+              <MathJax>{"\\[ Weighted \\ Normalized \\ Matrix \\]"}</MathJax>
+              <MathJax dynamic>
+                {matrixExpression(
+                  formatMatrixNormalization(weightedNormalizedMatrix)
+                )}
+              </MathJax>
+            </div>
+            <div className="mb-5">
+              <MathJax>{"\\[ Ideal \\ Solution \\]"}</MathJax>
+              <MathJax dynamic>
+                {matrixExpression(formatIdealSolution(idealSolutions))}
+              </MathJax>
+            </div>
+            <div className="mb-5">
+              <MathJax>{"\\[ Closeness \\ Ideal \\ Solution \\]"}</MathJax>
+              <MathJax dynamic>
+                {matrixExpression(
+                  convertToArrayOfArrays(closenessIdealSolutions)
+                )}
+              </MathJax>
+            </div>
+            <div className="mb-5">
+              <MathJax>{"\\[ Ranking \\]"}</MathJax>
+              <MathJax dynamic>
+                {matrixExpression(convertToRank(ranks))}
+              </MathJax>
+            </div>
+          </MathJaxContext>
         </div>
       </main>
     </div>
