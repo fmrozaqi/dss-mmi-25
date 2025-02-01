@@ -82,31 +82,23 @@ export default function SawPage() {
           updateAlternatives={dss.updateAlternatives}
           deleteAlternative={dss.deleteAlternative}
         />
-        <div>
-          <MathJaxContext>
-            <div>
-              <h2>Normalized Matrix</h2>
-              <MathJax>
+        <div className="flex flex-col items-center justify-center w-full">
+          <MathJaxContext renderMode="post">
+            <div className="mb-5">
+              <MathJax>{"\\[ Normalized \\ Matrix \\]"}</MathJax>
+              <MathJax dynamic>
                 {matrixExpression(formatMatrixNormalization(normalizedMatrix))}
               </MathJax>
             </div>
-          </MathJaxContext>
-        </div>
-        <div>
-          <MathJaxContext>
-            <div>
-              <h2>Normalized Weight</h2>
-              <MathJax>
+            <div className="mb-5">
+              <MathJax>{"\\[ Normalized \\ Weight \\]"}</MathJax>
+              <MathJax dynamic>
                 {matrixExpression(formatWeight(normalizedWeight))}
               </MathJax>
             </div>
-          </MathJaxContext>
-        </div>
-        <div>
-          <MathJaxContext>
-            <div>
-              <h2>Final Score</h2>
-              <MathJax>
+            <div className="mb-5">
+              <MathJax>{"\\[ Final \\ Score \\]"}</MathJax>
+              <MathJax dynamic>
                 {matrixExpression(convertToArrayOfArrays(finalScore))}
               </MathJax>
             </div>
