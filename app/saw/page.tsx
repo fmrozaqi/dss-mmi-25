@@ -5,6 +5,7 @@ import { useMemo } from "react";
 import { MathJax, MathJaxContext } from "better-react-mathjax";
 import {
   convertToArrayOfArrays,
+  convertToRank,
   formatMatrixNormalization,
   formatWeight,
   matrixExpression,
@@ -66,6 +67,17 @@ export default function SawPage() {
     return result;
   }, [normalizedMatrix, normalizedWeight]);
 
+  const ranks: number[] = useMemo(() => {
+    const sortedIndices = [...finalScore.keys()].sort(
+      (a, b) => finalScore[b] - finalScore[a]
+    );
+    const result: number[] = [];
+    sortedIndices.forEach((originalIndex, rank) => {
+      result[originalIndex] = rank + 1; // Rank starts from 1
+    });
+    return result;
+  }, [finalScore]);
+
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center p-8 pb-20 gap-16 font-[family-name:let(--font-geist-sans)]">
       <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
@@ -100,6 +112,12 @@ export default function SawPage() {
               <MathJax>{"\\[ Final \\ Score \\]"}</MathJax>
               <MathJax dynamic>
                 {matrixExpression(convertToArrayOfArrays(finalScore))}
+              </MathJax>
+            </div>
+            <div className="mb-5">
+              <MathJax>{"\\[ Ranking \\]"}</MathJax>
+              <MathJax dynamic>
+                {matrixExpression(convertToRank(ranks))}
               </MathJax>
             </div>
           </MathJaxContext>

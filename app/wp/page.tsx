@@ -1,6 +1,14 @@
 "use client";
 import { DSSInput } from "@/components/DSSInput";
 import { useDSSInput } from "@/hooks/useDSSInput";
+import {
+  convertToArrayOfArrays,
+  convertToRank,
+  formatMatrixNormalization,
+  formatWeight,
+  matrixExpression,
+} from "@/libs/lib";
+import { MathJax, MathJaxContext } from "better-react-mathjax";
 import { useMemo } from "react";
 
 export default function WpPage() {
@@ -83,36 +91,41 @@ export default function WpPage() {
           updateAlternatives={dss.updateAlternatives}
           deleteAlternative={dss.deleteAlternative}
         />
-        <div>
-          {poweredAlternative.map((row, idxRow) => (
-            <div key={`row${idxRow}`} className="flex flex-row">
-              {row.map((value, idx) => (
-                <div key={`${idxRow}-${idx}`} className="me-2">
-                  {value}
-                </div>
-              ))}
+        <div className="flex flex-col items-center justify-center w-full">
+          <MathJaxContext renderMode="post">
+            <div className="mb-5">
+              <MathJax>{"\\[ Normalized \\ Weight \\]"}</MathJax>
+              <MathJax dynamic>
+                {matrixExpression(formatWeight(normalizedWeight))}
+              </MathJax>
             </div>
-          ))}
-        </div>
-        <div>
-          {normalizedWeight.map((val, idx) => (
-            <div key={idx}>{val}</div>
-          ))}
-        </div>
-        <div>
-          {finalScore.map((val, idx) => (
-            <div key={idx}>{val}</div>
-          ))}
-        </div>
-        <div>
-          {normalizedFinalScore.map((val, idx) => (
-            <div key={idx}>{val}</div>
-          ))}
-        </div>
-        <div>
-          {ranks.map((val, idx) => (
-            <div key={idx}>{"A" + val}</div>
-          ))}
+            <div className="mb-5">
+              <MathJax>{"\\[ Powered \\ Alternative \\]"}</MathJax>
+              <MathJax dynamic>
+                {matrixExpression(
+                  formatMatrixNormalization(poweredAlternative)
+                )}
+              </MathJax>
+            </div>
+            <div className="mb-5">
+              <MathJax>{"\\[ Final \\ Score \\]"}</MathJax>
+              <MathJax dynamic>
+                {matrixExpression(convertToArrayOfArrays(finalScore))}
+              </MathJax>
+            </div>
+            <div className="mb-5">
+              <MathJax>{"\\[ Normalized \\ Final \\ Score \\]"}</MathJax>
+              <MathJax dynamic>
+                {matrixExpression(convertToArrayOfArrays(normalizedFinalScore))}
+              </MathJax>
+            </div>
+            <div className="mb-5">
+              <MathJax>{"\\[ Ranking \\]"}</MathJax>
+              <MathJax dynamic>
+                {matrixExpression(convertToRank(ranks))}
+              </MathJax>
+            </div>
+          </MathJaxContext>
         </div>
       </main>
     </div>

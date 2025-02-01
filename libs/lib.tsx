@@ -22,6 +22,10 @@ export function convertToArrayOfArrays(input: number[]): string[][] {
   ]);
 }
 
+export function convertToRank(input: number[]): string[][] {
+  return input.map((num, index) => [`Rank \\ ${index + 1}`, `a${num}`]);
+}
+
 export function formatMatrixNormalization(input: number[][]): string[][] {
   const header: string[] = [""];
   input[0].forEach((_, idx) => {
