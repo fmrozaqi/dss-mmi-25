@@ -23,7 +23,7 @@ export const DSSInput = ({
 }: DSSInputProps) => {
   return (
     <div>
-      <h1 className="pb-4">Criterias Input Form</h1>
+      <h1 className="pb-4 text-lg font-bold">Criterias Input Form</h1>
       {criterias.map((weight, index) => (
         <div key={index} className="flex flex-row pb-4">
           <label>
@@ -52,6 +52,7 @@ export const DSSInput = ({
                 value="cost"
                 checked={weight.type === "cost"}
                 onChange={(e) => updateCriterias(index, "type", e.target.value)}
+                className="me-2"
               />
               Cost
             </label>
@@ -62,6 +63,7 @@ export const DSSInput = ({
                 value="benefit"
                 checked={weight.type === "benefit"}
                 onChange={(e) => updateCriterias(index, "type", e.target.value)}
+                className="me-2"
               />
               Benefit
             </label>
