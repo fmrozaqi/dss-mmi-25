@@ -32,11 +32,12 @@ export default function SawPage() {
     alternatives.forEach((alternative) => {
       const normalizedRow: number[] = [];
       alternative.score.forEach((score, idx) => {
-        if (criterias[idx].type === "benefit") {
-          normalizedRow.push(score / maxValue[idx]);
-        } else {
-          normalizedRow.push(minValue[idx] / score);
-        }
+        if (criterias.length)
+          if (criterias[idx].type === "benefit") {
+            normalizedRow.push(score / maxValue[idx]);
+          } else {
+            normalizedRow.push(minValue[idx] / score);
+          }
       });
       result.push(normalizedRow);
     });

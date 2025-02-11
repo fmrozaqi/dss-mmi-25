@@ -1,9 +1,16 @@
 import { Alternative, Criteria, Key } from "@/types/DSSType";
 import { useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 
 export const useDSSInput = () => {
   const [criterias, setCriterias] = useState<Criteria[]>([
-    { name: "", weight: 1, type: "benefit" },
+    {
+      id: uuidv4(),
+      name: "Criteria 1",
+      weight: 1,
+      type: "benefit",
+      subCriteria: [],
+    },
   ]);
 
   const [alternatives, setAlternatives] = useState<Alternative[]>([
@@ -22,16 +29,27 @@ export const useDSSInput = () => {
   };
 
   const addCriteria = () => {
-    setCriterias([...criterias, { name: "", weight: 1, type: "benefit" }]);
+    setCriterias([
+      ...criterias,
+      {
+        id: uuidv4(),
+        name: `Criteria ${criterias.length + 1}`,
+        weight: 1,
+        type: "benefit",
+        subCriteria: [],
+      },
+    ]);
     resetAlternatives();
   };
 
   const updateCriterias = (index: number, key: Key, value: string) => {
     const newCriterias = [...criterias];
     if (key === "weight") {
-      newCriterias[index][key] = parseInt(value);
-    } else {
+      newCriterias[index][key] = parseFloat(value);
+    } else if (key === "name") {
       newCriterias[index][key] = value;
+    } else {
+      newCriterias[index][key] = value === "benefit" ? "benefit" : "cost";
     }
     setCriterias(newCriterias);
   };
@@ -59,7 +77,7 @@ export const useDSSInput = () => {
     if (key === "name") {
       newAlternatives[index][key] = value;
     } else {
-      newAlternatives[index]["score"][parseInt(key)] = parseInt(value);
+      newAlternatives[index]["score"][parseInt(key)] = parseFloat(value);
     }
     setAlternatives(newAlternatives);
   };

@@ -49,24 +49,26 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Criteria } from "@/types/DSSType";
+import { useDSSInput } from "@/hooks/useDSSInput";
 
 export const data: Criteria[] = [
   {
     id: "m5gr84i9",
-    criteria: "Criteria 1",
+    name: "Criteria 1",
     weight: 1.5,
     type: "benefit",
     subCriteria: [
       {
         id: "m5gr84i9",
-        criteria: "Sub Criteria 1",
+        name: "Sub Criteria 1",
         weight: 1.5,
         type: "benefit",
         subCriteria: [],
       },
       {
         id: "m5gr84i9",
-        criteria: "Sub Criteria 2",
+        name: "Sub Criteria 2",
         weight: 2.5,
         type: "benefit",
         subCriteria: [],
@@ -75,151 +77,15 @@ export const data: Criteria[] = [
   },
   {
     id: "3u1reuv4",
-    criteria: "Criteria 2",
+    name: "Criteria 2",
     weight: 1,
     type: "cost",
     subCriteria: [],
   },
 ];
 
-export type Criteria = {
-  id: string;
-  criteria: string;
-  weight: number;
-  type: "benefit" | "cost";
-  subCriteria: Criteria[];
-};
-
-export const columns: ColumnDef<Criteria>[] = [
-  {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    accessorKey: "criteria",
-    header: ({ table }) => (
-      <Button variant="ghost" onClick={table.getToggleAllRowsExpandedHandler()}>
-        Criteria
-        {table.getIsAllRowsExpanded() ? <ChevronDown /> : <ChevronRight />}
-      </Button>
-    ),
-    cell: ({ row }) => (
-      //   <div className="capitalize">{row.getValue("status")}</div>
-      <div className="flex" style={{ paddingLeft: `${row.depth * 2}rem` }}>
-        {row.getCanExpand() ? (
-          <Button variant="ghost" onClick={row.getToggleExpandedHandler()}>
-            {row.getIsExpanded() ? <ChevronDown /> : <ChevronRight />}
-          </Button>
-        ) : (
-          <Button variant="ghost" className="cursor-auto">
-            <Dot />
-          </Button>
-        )}
-        <Input
-          placeholder="Filter emails..."
-          value={row.getValue("criteria")}
-        />
-        <>{}</>
-      </div>
-    ),
-  },
-  {
-    accessorKey: "weight",
-    header: () => <div className="text-center">Weight</div>,
-    cell: ({ row }) => (
-      <div className="w-full">
-        <Input
-          value={row.getValue("weight")}
-          className="w-20 mx-auto"
-          type="number"
-          step="0.1"
-        />
-      </div>
-    ),
-  },
-  {
-    accessorKey: "type",
-    header: () => <div className="text-center">Type</div>,
-    cell: ({ row }) => (
-      <div className="flex justify-center items-center">
-        <Select value={row.getValue("type")}>
-          <SelectTrigger>
-            <SelectValue placeholder="Select type" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectLabel>Type</SelectLabel>
-              <SelectItem value="benefit">Benefit</SelectItem>
-              <SelectItem value="cost">Cost</SelectItem>
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-      </div>
-    ),
-  },
-  {
-    id: "actions",
-    enableHiding: false,
-    cell: ({}) => {
-      return (
-        <TooltipProvider delayDuration={200}>
-          <Tooltip>
-            <TooltipTrigger>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Delete criteria</span>
-                <Trash />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Delete criteria</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      );
-    },
-  },
-  {
-    id: "add",
-    enableHiding: false,
-    cell: ({}) => {
-      return (
-        <TooltipProvider delayDuration={200}>
-          <Tooltip>
-            <TooltipTrigger>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Add sub criteria</span>
-                <PlusSquare />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Add sub criteria</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      );
-    },
-  },
-];
-
 export default function DataTableDemo() {
+  const dss = useDSSInput();
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -230,8 +96,155 @@ export default function DataTableDemo() {
 
   const [expanded, setExpanded] = React.useState<ExpandedState>({});
 
+  const columns: ColumnDef<Criteria>[] = [
+    {
+      id: "select",
+      header: ({ table }) => (
+        <Checkbox
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && "indeterminate")
+          }
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label="Select all"
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label="Select row"
+        />
+      ),
+      enableSorting: false,
+      enableHiding: false,
+    },
+    {
+      accessorKey: "name",
+      header: ({ table }) => (
+        <Button
+          variant="ghost"
+          onClick={table.getToggleAllRowsExpandedHandler()}
+        >
+          Criteria
+          {table.getIsAllRowsExpanded() ? <ChevronDown /> : <ChevronRight />}
+        </Button>
+      ),
+      cell: ({ row }) => (
+        //   <div className="capitalize">{row.getValue("status")}</div>
+        <div className="flex" style={{ paddingLeft: `${row.depth * 2}rem` }}>
+          {row.getCanExpand() ? (
+            <Button variant="ghost" onClick={row.getToggleExpandedHandler()}>
+              {row.getIsExpanded() ? <ChevronDown /> : <ChevronRight />}
+            </Button>
+          ) : (
+            <Button variant="ghost" className="cursor-auto">
+              <Dot />
+            </Button>
+          )}
+          <Input
+            placeholder="Criteria name..."
+            value={row.getValue("name")}
+            onChange={(e) =>
+              dss.updateCriterias(row.index, "name", e.target.value)
+            }
+          />
+          <>{}</>
+        </div>
+      ),
+    },
+    {
+      accessorKey: "weight",
+      header: () => <div className="text-center">Weight</div>,
+      cell: ({ row }) => (
+        <div className="w-full">
+          <Input
+            value={row.getValue("weight")}
+            className="w-20 mx-auto"
+            type="number"
+            step="0.1"
+            onChange={(e) =>
+              dss.updateCriterias(row.index, "weight", e.target.value)
+            }
+          />
+        </div>
+      ),
+    },
+    {
+      accessorKey: "type",
+      header: () => <div className="text-center">Type</div>,
+      cell: ({ row }) => (
+        <div className="flex justify-center items-center">
+          <Select
+            value={row.getValue("type")}
+            onValueChange={(value) =>
+              dss.updateCriterias(row.index, "type", value)
+            }
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectLabel>Type</SelectLabel>
+                <SelectItem value="benefit">Benefit</SelectItem>
+                <SelectItem value="cost">Cost</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
+      ),
+    },
+    {
+      id: "actions",
+      enableHiding: false,
+      cell: ({ row }) => {
+        return (
+          <TooltipProvider delayDuration={200}>
+            <Tooltip>
+              <TooltipTrigger>
+                <Button
+                  variant="ghost"
+                  className="h-8 w-8 p-0"
+                  onClick={() => dss.deleteCriteria(row.index)}
+                >
+                  <span className="sr-only">Delete criteria</span>
+                  <Trash />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Delete criteria</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        );
+      },
+    },
+    {
+      id: "add",
+      enableHiding: false,
+      cell: ({}) => {
+        return (
+          <TooltipProvider delayDuration={200}>
+            <Tooltip>
+              <TooltipTrigger>
+                <Button variant="ghost" className="h-8 w-8 p-0">
+                  <span className="sr-only">Add sub criteria</span>
+                  <PlusSquare />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Add sub criteria</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        );
+      },
+    },
+  ];
+
   const table = useReactTable({
-    data,
+    data: dss.criterias,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -304,6 +317,11 @@ export default function DataTableDemo() {
             )}
           </TableBody>
         </Table>
+      </div>
+      <div className="flex items-center py-4">
+        <Button variant="default" onClick={dss.addCriteria}>
+          Add Criteria
+        </Button>
       </div>
     </div>
   );

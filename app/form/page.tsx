@@ -27,7 +27,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Criteria, data } from "../table/page";
+import { data } from "../table/page";
 import {
   Select,
   SelectContent,
@@ -43,6 +43,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Criteria } from "@/types/DSSType";
 
 export const columns: ColumnDef<Criteria>[] = [
   {
