@@ -1,5 +1,6 @@
 export type Criteria = {
   id: string;
+  active: boolean;
   name: string;
   weight: number;
   type?: "benefit" | "cost";

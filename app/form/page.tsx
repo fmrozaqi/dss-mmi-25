@@ -27,7 +27,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { data } from "../table/page";
 import {
   Select,
   SelectContent,
@@ -44,6 +43,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Criteria } from "@/types/DSSType";
+import { useDSSInput } from "@/hooks/useDSSInput";
 
 export const columns: ColumnDef<Criteria>[] = [
   {
@@ -102,6 +102,7 @@ export const columns: ColumnDef<Criteria>[] = [
 ];
 
 export default function DataTableDemo() {
+  const dss = useDSSInput();
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -113,7 +114,7 @@ export default function DataTableDemo() {
   const [expanded, setExpanded] = React.useState<ExpandedState>(true);
 
   const table = useReactTable({
-    data,
+    data: dss.criterias,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,

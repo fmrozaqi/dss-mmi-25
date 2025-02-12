@@ -6,6 +6,7 @@ export const useDSSInput = () => {
   const [criterias, setCriterias] = useState<Criteria[]>([
     {
       id: uuidv4(),
+      active: false,
       name: "Criteria 1",
       weight: 1,
       type: "benefit",
@@ -33,6 +34,7 @@ export const useDSSInput = () => {
       ...criterias,
       {
         id: uuidv4(),
+        active: false,
         name: `Criteria ${criterias.length + 1}`,
         weight: 1,
         type: "benefit",
@@ -54,6 +56,7 @@ export const useDSSInput = () => {
             ...criteria.subCriteria,
             {
               id: uuidv4(),
+              active: false,
               name: `Sub Criteria ${criteria.subCriteria.length + 1}`,
               weight: 1,
               subCriteria: [],
@@ -96,6 +99,42 @@ export const useDSSInput = () => {
     updates: Partial<Omit<Criteria, "id" | "subCriteria">>
   ) => {
     const newCriterias = updateCriteriaById(criterias, id, updates);
+    setCriterias(newCriterias);
+  };
+
+  const updateActiveStatusById = (
+    criteriaList: Criteria[],
+    id: string,
+    active: boolean
+  ): Criteria[] => {
+    return criteriaList.map((criteria) => {
+      if (criteria.id === id) {
+        return {
+          ...criteria,
+          active: active,
+          subCriteria: criteria.subCriteria.map(
+            (subCriteria) =>
+              updateActiveStatusById([subCriteria], subCriteria.id, active)[0]
+          ),
+        };
+      }
+
+      return {
+        ...criteria,
+        subCriteria: updateActiveStatusById(criteria.subCriteria, id, active),
+      };
+    });
+  };
+
+  const updateActiveStatus = (id: string, active: boolean) => {
+    const newCriterias = updateActiveStatusById(criterias, id, active);
+    setCriterias(newCriterias);
+  };
+
+  const updateActiveStatusAll = (active: boolean) => {
+    const newCriterias = criterias.map(
+      (criteria) => updateActiveStatusById([criteria], criteria.id, active)[0]
+    );
     setCriterias(newCriterias);
   };
 
@@ -145,6 +184,8 @@ export const useDSSInput = () => {
     addCriteria,
     addSubCriteria,
     updateCriterias,
+    updateActiveStatus,
+    updateActiveStatusAll,
     deleteCriteria,
     addAlternative,
     updateAlternatives,

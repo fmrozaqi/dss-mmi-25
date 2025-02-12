@@ -52,38 +52,6 @@ import {
 import { Criteria } from "@/types/DSSType";
 import { useDSSInput } from "@/hooks/useDSSInput";
 
-export const data: Criteria[] = [
-  {
-    id: "m5gr84i9",
-    name: "Criteria 1",
-    weight: 1.5,
-    type: "benefit",
-    subCriteria: [
-      {
-        id: "m5gr84i9",
-        name: "Sub Criteria 1",
-        weight: 1.5,
-        type: "benefit",
-        subCriteria: [],
-      },
-      {
-        id: "m5gr84i9",
-        name: "Sub Criteria 2",
-        weight: 2.5,
-        type: "benefit",
-        subCriteria: [],
-      },
-    ],
-  },
-  {
-    id: "3u1reuv4",
-    name: "Criteria 2",
-    weight: 1,
-    type: "cost",
-    subCriteria: [],
-  },
-];
-
 export default function DataTableDemo() {
   const dss = useDSSInput();
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -94,7 +62,7 @@ export default function DataTableDemo() {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const [expanded, setExpanded] = React.useState<ExpandedState>({});
+  const [expanded, setExpanded] = React.useState<ExpandedState>(true);
 
   const columns: ColumnDef<Criteria>[] = [
     {
@@ -105,7 +73,10 @@ export default function DataTableDemo() {
             table.getIsAllPageRowsSelected() ||
             (table.getIsSomePageRowsSelected() && "indeterminate")
           }
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          onCheckedChange={(value) => {
+            table.toggleAllPageRowsSelected(!!value);
+            dss.updateActiveStatusAll(!!value);
+          }}
           aria-label="Select all"
         />
       ),
@@ -114,7 +85,7 @@ export default function DataTableDemo() {
           checked={row.getIsSelected()}
           onCheckedChange={(value) => {
             row.toggleSelected(!!value);
-            console.log(value, row.id);
+            dss.updateActiveStatus(row.original.id, !!value);
           }}
           aria-label="Select row"
         />
@@ -152,7 +123,6 @@ export default function DataTableDemo() {
               dss.updateCriterias(row.original.id, { name: e.target.value })
             }
           />
-          <>{}</>
         </div>
       ),
     },
@@ -256,9 +226,9 @@ export default function DataTableDemo() {
     },
   ];
 
-  // React.useEffect(() => {
-  //   console.log(rowSelection);
-  // }, [rowSelection]);
+  React.useEffect(() => {
+    console.log(dss.criterias);
+  }, [rowSelection]);
 
   const table = useReactTable({
     data: dss.criterias,
