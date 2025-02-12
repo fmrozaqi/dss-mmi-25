@@ -47,7 +47,7 @@ import { useDSSInput } from "@/hooks/useDSSInput";
 
 export const columns: ColumnDef<Criteria>[] = [
   {
-    accessorKey: "criteria",
+    accessorKey: "name",
     header: ({ table }) => (
       <Button variant="ghost" onClick={table.getToggleAllRowsExpandedHandler()}>
         Criteria
@@ -63,12 +63,12 @@ export const columns: ColumnDef<Criteria>[] = [
             style={{ cursor: "pointer" }}
           >
             {row.getIsExpanded() ? <ChevronDown /> : <ChevronRight />}
-            {row.getValue("criteria")}
+            {row.getValue("name")}
           </Button>
         ) : (
           <Button variant="ghost" className="cursor-auto">
             <Dot />
-            {row.getValue("criteria")}
+            {row.getValue("name")}
           </Button>
         )}
       </div>

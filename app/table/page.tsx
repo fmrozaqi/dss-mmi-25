@@ -310,6 +310,16 @@ export default function DataTableDemo() {
           Add Criteria
         </Button>
       </div>
+      <div className="flex items-center py-4">
+        <Button
+          variant="default"
+          onClick={() =>
+            localStorage.setItem("criteriaList", JSON.stringify(dss.criterias))
+          }
+        >
+          Save Criteria
+        </Button>
+      </div>
     </div>
   );
 }

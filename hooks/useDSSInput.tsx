@@ -1,18 +1,27 @@
 import { Alternative, Criteria } from "@/types/DSSType";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 
 export const useDSSInput = () => {
-  const [criterias, setCriterias] = useState<Criteria[]>([
-    {
-      id: uuidv4(),
-      active: false,
-      name: "Criteria 1",
-      weight: 1,
-      type: "benefit",
-      subCriteria: [],
-    },
-  ]);
+  const [criterias, setCriterias] = useState<Criteria[]>([]);
+
+  useEffect(() => {
+    const criterias = localStorage.getItem("criteriaList");
+    if (criterias) {
+      setCriterias(JSON.parse(criterias));
+    } else {
+      setCriterias([
+        {
+          id: uuidv4(),
+          active: false,
+          name: "Criteria 1",
+          weight: 1,
+          type: "benefit",
+          subCriteria: [],
+        },
+      ]);
+    }
+  }, []);
 
   const [alternatives, setAlternatives] = useState<Alternative[]>([
     { name: "", score: [1] },
