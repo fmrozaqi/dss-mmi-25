@@ -112,7 +112,10 @@ export default function DataTableDemo() {
       cell: ({ row }) => (
         <Checkbox
           checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          onCheckedChange={(value) => {
+            row.toggleSelected(!!value);
+            console.log(value, row.id);
+          }}
           aria-label="Select row"
         />
       ),
@@ -146,7 +149,7 @@ export default function DataTableDemo() {
             placeholder="Criteria name..."
             value={row.getValue("name")}
             onChange={(e) =>
-              dss.updateCriterias(row.index, "name", e.target.value)
+              dss.updateCriterias(row.original.id, { name: e.target.value })
             }
           />
           <>{}</>
@@ -164,7 +167,9 @@ export default function DataTableDemo() {
             type="number"
             step="0.1"
             onChange={(e) =>
-              dss.updateCriterias(row.index, "weight", e.target.value)
+              dss.updateCriterias(row.original.id, {
+                weight: parseFloat(e.target.value),
+              })
             }
           />
         </div>
@@ -175,23 +180,27 @@ export default function DataTableDemo() {
       header: () => <div className="text-center">Type</div>,
       cell: ({ row }) => (
         <div className="flex justify-center items-center">
-          <Select
-            value={row.getValue("type")}
-            onValueChange={(value) =>
-              dss.updateCriterias(row.index, "type", value)
-            }
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Select type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectLabel>Type</SelectLabel>
-                <SelectItem value="benefit">Benefit</SelectItem>
-                <SelectItem value="cost">Cost</SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
+          {!row.parentId && (
+            <Select
+              value={row.getValue("type")}
+              onValueChange={(value) =>
+                dss.updateCriterias(row.original.id, {
+                  type: value === "benefit" ? "benefit" : "cost",
+                })
+              }
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>Type</SelectLabel>
+                  <SelectItem value="benefit">Benefit</SelectItem>
+                  <SelectItem value="cost">Cost</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          )}
         </div>
       ),
     },
@@ -206,7 +215,7 @@ export default function DataTableDemo() {
                 <Button
                   variant="ghost"
                   className="h-8 w-8 p-0"
-                  onClick={() => dss.deleteCriteria(row.index)}
+                  onClick={() => dss.deleteCriteria(row.original.id)}
                 >
                   <span className="sr-only">Delete criteria</span>
                   <Trash />
@@ -223,12 +232,16 @@ export default function DataTableDemo() {
     {
       id: "add",
       enableHiding: false,
-      cell: ({}) => {
+      cell: ({ row }) => {
         return (
           <TooltipProvider delayDuration={200}>
             <Tooltip>
               <TooltipTrigger>
-                <Button variant="ghost" className="h-8 w-8 p-0">
+                <Button
+                  variant="ghost"
+                  className="h-8 w-8 p-0"
+                  onClick={() => dss.addSubCriteria(row.original.id)}
+                >
                   <span className="sr-only">Add sub criteria</span>
                   <PlusSquare />
                 </Button>
@@ -242,6 +255,10 @@ export default function DataTableDemo() {
       },
     },
   ];
+
+  // React.useEffect(() => {
+  //   console.log(rowSelection);
+  // }, [rowSelection]);
 
   const table = useReactTable({
     data: dss.criterias,

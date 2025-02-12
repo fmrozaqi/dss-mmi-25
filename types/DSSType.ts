@@ -2,7 +2,7 @@ export type Criteria = {
   id: string;
   name: string;
   weight: number;
-  type: "benefit" | "cost";
+  type?: "benefit" | "cost";
   subCriteria: Criteria[];
 };
 

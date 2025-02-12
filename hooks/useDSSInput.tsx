@@ -1,4 +1,4 @@
-import { Alternative, Criteria, Key } from "@/types/DSSType";
+import { Alternative, Criteria } from "@/types/DSSType";
 import { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 
@@ -42,22 +42,79 @@ export const useDSSInput = () => {
     resetAlternatives();
   };
 
-  const updateCriterias = (index: number, key: Key, value: string) => {
-    const newCriterias = [...criterias];
-    if (key === "weight") {
-      newCriterias[index][key] = parseFloat(value);
-    } else if (key === "name") {
-      newCriterias[index][key] = value;
-    } else {
-      newCriterias[index][key] = value === "benefit" ? "benefit" : "cost";
-    }
+  const addSubCriteriaById = (
+    criteriaList: Criteria[],
+    id: string
+  ): Criteria[] => {
+    return criteriaList.map((criteria) => {
+      if (criteria.id === id) {
+        return {
+          ...criteria,
+          subCriteria: [
+            ...criteria.subCriteria,
+            {
+              id: uuidv4(),
+              name: `Sub Criteria ${criteria.subCriteria.length + 1}`,
+              weight: 1,
+              subCriteria: [],
+            },
+          ],
+        };
+      }
+
+      return {
+        ...criteria,
+        subCriteria: addSubCriteriaById(criteria.subCriteria, id),
+      };
+    });
+  };
+
+  const addSubCriteria = (id: string) => {
+    const newCriterias = addSubCriteriaById(criterias, id);
     setCriterias(newCriterias);
   };
 
-  const deleteCriteria = (deleteIndex: number) => {
-    const newCriterias = criterias.filter((_, index) => index !== deleteIndex);
+  function updateCriteriaById(
+    criteriaList: Criteria[],
+    id: string,
+    updates: Partial<Omit<Criteria, "id" | "subCriteria">>
+  ): Criteria[] {
+    return criteriaList.map((criteria) => {
+      if (criteria.id === id) {
+        return { ...criteria, ...updates };
+      }
+
+      return {
+        ...criteria,
+        subCriteria: updateCriteriaById(criteria.subCriteria, id, updates),
+      };
+    });
+  }
+
+  const updateCriterias = (
+    id: string,
+    updates: Partial<Omit<Criteria, "id" | "subCriteria">>
+  ) => {
+    const newCriterias = updateCriteriaById(criterias, id, updates);
     setCriterias(newCriterias);
-    resetAlternatives(deleteIndex);
+  };
+
+  function deleteCriteriaById(
+    criteriaList: Criteria[],
+    id: string
+  ): Criteria[] {
+    return criteriaList
+      .filter((criteria) => criteria.id !== id)
+      .map((criteria) => ({
+        ...criteria,
+        subCriteria: deleteCriteriaById(criteria.subCriteria, id),
+      }));
+  }
+
+  const deleteCriteria = (id: string) => {
+    const newCriterias = deleteCriteriaById(criterias, id);
+    setCriterias(newCriterias);
+    // resetAlternatives(deleteIndex);
   };
 
   const addAlternative = () => {
@@ -86,6 +143,7 @@ export const useDSSInput = () => {
     criterias,
     alternatives,
     addCriteria,
+    addSubCriteria,
     updateCriterias,
     deleteCriteria,
     addAlternative,
