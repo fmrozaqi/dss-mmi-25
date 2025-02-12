@@ -44,6 +44,12 @@ import {
 } from "@/components/ui/card";
 import { Criteria } from "@/types/DSSType";
 import { useDSSInput } from "@/hooks/useDSSInput";
+import { use } from "react";
+import { useDMInput } from "@/hooks/useDMInput";
+
+interface PageProps {
+  params: Promise<{ id: string }>;
+}
 
 export const columns: ColumnDef<Criteria>[] = [
   {
@@ -101,8 +107,10 @@ export const columns: ColumnDef<Criteria>[] = [
   },
 ];
 
-export default function DataTableDemo() {
+export default function DataTableDemo({ params }: PageProps) {
   const dss = useDSSInput();
+  const dms = useDMInput();
+  const { id } = use(params);
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -141,8 +149,10 @@ export default function DataTableDemo() {
       <div>
         <Card>
           <CardHeader>
-            <CardTitle>Decision Maker Name</CardTitle>
-            <CardDescription>DM Role</CardDescription>
+            <CardTitle>{dms.getDecisionMakerById(id)?.name}</CardTitle>
+            <CardDescription>
+              {dms.getDecisionMakerById(id)?.role}
+            </CardDescription>
           </CardHeader>
         </Card>
       </div>

@@ -51,9 +51,11 @@ import {
 } from "@/components/ui/select";
 import { Criteria } from "@/types/DSSType";
 import { useDSSInput } from "@/hooks/useDSSInput";
+import { useDMInput } from "@/hooks/useDMInput";
 
 export default function DataTableDemo() {
   const dss = useDSSInput();
+  const dms = useDMInput();
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -318,6 +320,42 @@ export default function DataTableDemo() {
           }
         >
           Save Criteria
+        </Button>
+      </div>
+      <div className="items-center py-4 space-y-2">
+        {dms.decisionMakers.map((dm) => (
+          <div key={dm.id} className="flex w-full items-center space-x-2">
+            <Input
+              type="text"
+              placeholder="Decision Maker Name"
+              value={dm.name}
+              className="w-3/5"
+              onChange={(e) =>
+                dms.updateDecisionMaker(dm.id, { name: e.target.value })
+              }
+            />
+            <Input
+              type="text"
+              placeholder="Decision Maker Role"
+              value={dm.role}
+              className="w-2/5"
+              onChange={(e) =>
+                dms.updateDecisionMaker(dm.id, { role: e.target.value })
+              }
+            />
+            <Button onClick={() => dms.removeDecisionMaker(dm.id)}>
+              Delete
+            </Button>
+          </div>
+        ))}
+      </div>
+      <div className="flex items-center py-4 space-x-2">
+        <Button variant="default" onClick={() => dms.addDecisionMaker()}>
+          Add Decision Maker
+        </Button>
+
+        <Button variant="default" onClick={() => dms.saveDecisionMakers()}>
+          Save Decision Maker
         </Button>
       </div>
     </div>

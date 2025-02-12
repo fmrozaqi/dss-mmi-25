@@ -12,4 +12,10 @@ export type Alternative = {
   score: number[];
 };
 
+export type DecisionMaker = {
+  id: string;
+  name: string;
+  role: string;
+};
+
 export type Key = "name" | "weight" | "type";
