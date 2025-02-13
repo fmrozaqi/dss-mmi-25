@@ -1,14 +1,19 @@
-import { Criteria, DecisionMaker } from "@/types/DSSType";
+import { Criteria, DecisionMaker, WeightType } from "@/types/DSSType";
 import { useDMInput } from "./useDMInput";
 import { useDSSInput } from "./useDSSInput";
 
 export const useCalc = () => {
-  //   const { decisionMakers } = useDMInput();
+  const { decisionMakers } = useDMInput();
   const { criterias } = useDSSInput();
 
   const getMatrixWeight = (): number[] => {
     const weight = criterias.map((criteria) => criteria.weight);
     return weight;
+  };
+
+  const getMatrixWeightType = (): WeightType[] => {
+    const weightType = criterias.map((criteria) => criteria.type);
+    return weightType;
   };
 
   function computeScores(criteriaList: Criteria[]): number[] {
@@ -35,8 +40,21 @@ export const useCalc = () => {
     return dm?.alternatives?.map((alt) => computeScores(alt.score ?? [])) ?? [];
   };
 
+  const getMeanScore = (): number[][] => {
+    const scores = decisionMakers.map((dm) => getMatrixScore(dm));
+    const sumScores = scores[0].map((row, i) =>
+      row.map((_, j) => scores.reduce((sum, A) => sum + A[i][j], 0))
+    );
+    const averageScores = sumScores.map((row) =>
+      row.map((score) => score / decisionMakers.length)
+    );
+    return averageScores;
+  };
+
   return {
     getMatrixWeight,
     getMatrixScore,
+    getMatrixWeightType,
+    getMeanScore,
   };
 };

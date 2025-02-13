@@ -1,9 +1,11 @@
+export type WeightType = "benefit" | "cost";
+
 export type Criteria = {
   id: string;
   active: boolean;
   name: string;
   weight: number;
-  type: "benefit" | "cost";
+  type: WeightType;
   score?: number;
   subCriteria: Criteria[];
 };
