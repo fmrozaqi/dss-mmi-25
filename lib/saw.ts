@@ -4,7 +4,7 @@ export class SAW {
   static normalizedMatrix = (
     matrixScore: number[][],
     matrixWeightType: WeightType[]
-  ) => {
+  ): number[][] => {
     const columnMinMax =
       matrixScore[0]?.map((_, colIndex) =>
         matrixScore.reduce(
@@ -17,12 +17,11 @@ export class SAW {
       ) ?? [];
     return matrixScore.map((alternativeScore) => {
       return alternativeScore.map((score, idx) => {
-        if (matrixWeightType.length)
-          if (matrixWeightType[idx] === "benefit") {
-            return score / columnMinMax[idx][1];
-          } else {
-            return columnMinMax[idx][0] / score;
-          }
+        if (matrixWeightType[idx] === "benefit") {
+          return score / columnMinMax[idx][1];
+        } else {
+          return columnMinMax[idx][0] / score;
+        }
       });
     });
   };

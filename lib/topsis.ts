@@ -9,7 +9,7 @@ export class TOPSIS {
           matrixScore.reduce((sum, row) => sum + (row[colIndex] ?? 0) ** 2, 0)
         )
       ) ?? [];
-    return matrixScore.forEach((rowScore) => {
+    return matrixScore.map((rowScore) => {
       return rowScore.map((score, idx) => {
         return score / denominator[idx];
       });
@@ -53,6 +53,9 @@ export class TOPSIS {
     matrixScore: number[][],
     idealSolutions: IdealSolution[]
   ) => {
+    if (!idealSolutions.length) {
+      return [];
+    }
     return matrixScore.map((rowScore) => {
       const idealSolution = rowScore
         .reduce(

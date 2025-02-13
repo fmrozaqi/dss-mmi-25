@@ -1,6 +1,7 @@
 import { Criteria, DecisionMaker, WeightType } from "@/types/DSSType";
 import { useDMInput } from "./useDMInput";
 import { useDSSInput } from "./useDSSInput";
+import { normalizedWeight } from "@/lib/utils";
 
 export const useCalc = () => {
   const { decisionMakers } = useDMInput();
@@ -8,7 +9,8 @@ export const useCalc = () => {
 
   const getMatrixWeight = (): number[] => {
     const weight = criterias.map((criteria) => criteria.weight);
-    return weight;
+    const normalWeight = normalizedWeight(weight);
+    return normalWeight;
   };
 
   const getMatrixWeightType = (): WeightType[] => {
@@ -41,6 +43,9 @@ export const useCalc = () => {
   };
 
   const getMeanScore = (): number[][] => {
+    if (!decisionMakers.length) {
+      return [];
+    }
     const scores = decisionMakers.map((dm) => getMatrixScore(dm));
     const sumScores = scores[0].map((row, i) =>
       row.map((_, j) => scores.reduce((sum, A) => sum + A[i][j], 0))

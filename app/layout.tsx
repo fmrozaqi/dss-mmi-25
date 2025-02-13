@@ -1,5 +1,16 @@
 import Link from "next/link";
 import "./globals.css";
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuIndicator,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+  NavigationMenuViewport,
+  navigationMenuTriggerStyle,
+} from "@/components/ui/navigation-menu";
 
 export default function RootLayout({
   children,
@@ -9,22 +20,24 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <nav style={navStyle}>
-          <ul style={navListStyle}>
-            <li style={navItemStyle}>
-              <Link href="/">Home</Link>
-            </li>
-            <li style={navItemStyle}>
-              <Link href="/saw">SAW</Link>
-            </li>
-            <li style={navItemStyle}>
-              <Link href="/wp">WP</Link>
-            </li>
-            <li style={navItemStyle}>
-              <Link href="/topsis">TOPSIS</Link>
-            </li>
-          </ul>
-        </nav>
+        <NavigationMenu>
+          <NavigationMenuList>
+            <NavigationMenuItem>
+              <Link href="/admin-input" legacyBehavior passHref>
+                <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                  Admin Input
+                </NavigationMenuLink>
+              </Link>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
+              <Link href="/result" legacyBehavior passHref>
+                <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                  Result
+                </NavigationMenuLink>
+              </Link>
+            </NavigationMenuItem>
+          </NavigationMenuList>
+        </NavigationMenu>
         <main>{children}</main>
       </body>
     </html>
