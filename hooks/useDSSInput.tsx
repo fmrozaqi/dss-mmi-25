@@ -2,16 +2,21 @@ import { Alternative, Criteria } from "@/types/DSSType";
 import { RowSelectionState } from "@tanstack/react-table";
 import { useEffect, useMemo, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
+import { useDebouncedCallback } from "use-debounce";
 
 export const useDSSInput = () => {
   const [criterias, setCriterias] = useState<Criteria[]>([]);
 
+  const debounceSetCriteria = useDebouncedCallback((value) => {
+    setCriterias(value);
+  }, 1000);
+
   useEffect(() => {
     const criterias = localStorage.getItem("criteriaList");
     if (criterias) {
-      setCriterias(JSON.parse(criterias));
+      debounceSetCriteria(JSON.parse(criterias));
     } else {
-      setCriterias([
+      debounceSetCriteria([
         {
           id: uuidv4(),
           active: false,
@@ -24,23 +29,22 @@ export const useDSSInput = () => {
     }
   }, []);
 
-  const [alternatives, setAlternatives] = useState<Alternative[]>([
-    { name: "", score: [1] },
-  ]);
+  const [alternatives, setAlternatives] = useState<Alternative[]>([]);
+  const debounceSetAlternative = useDebouncedCallback((value) => {
+    setAlternatives(value);
+  }, 1000);
 
-  const resetAlternatives = (index?: number) => {
-    alternatives.map((alternative) => {
-      if (index !== undefined) {
-        alternative.score.splice(index, 1);
-      } else {
-        alternative.score.push(1);
-      }
-    });
-    setAlternatives(alternatives);
-  };
+  useEffect(() => {
+    const alternatives = localStorage.getItem("alternatives");
+    if (alternatives) {
+      debounceSetAlternative(JSON.parse(alternatives));
+    } else {
+      debounceSetAlternative([{ id: uuidv4(), name: "Alternative 1" }]);
+    }
+  }, []);
 
   const addCriteria = () => {
-    setCriterias([
+    debounceSetCriteria([
       ...criterias,
       {
         id: uuidv4(),
@@ -51,7 +55,6 @@ export const useDSSInput = () => {
         subCriteria: [],
       },
     ]);
-    resetAlternatives();
   };
 
   const addSubCriteriaById = (
@@ -85,7 +88,7 @@ export const useDSSInput = () => {
 
   const addSubCriteria = (id: string) => {
     const newCriterias = addSubCriteriaById(criterias, id);
-    setCriterias(newCriterias);
+    debounceSetCriteria(newCriterias);
   };
 
   function updateCriteriaById(
@@ -121,7 +124,7 @@ export const useDSSInput = () => {
     updates: Partial<Omit<Criteria, "id" | "subCriteria">>
   ) => {
     const newCriterias = updateCriteriaById(criterias, id, updates);
-    setCriterias(newCriterias);
+    debounceSetCriteria(newCriterias);
   };
 
   const updateActiveStatusById = (
@@ -145,7 +148,7 @@ export const useDSSInput = () => {
 
   const updateActiveStatus = (selectedRows: RowSelectionState) => {
     const newCriterias = updateActiveStatusById(criterias, "", selectedRows);
-    setCriterias(newCriterias);
+    debounceSetCriteria(newCriterias);
   };
 
   const getSelectedRows = (
@@ -191,30 +194,37 @@ export const useDSSInput = () => {
 
   const deleteCriteria = (id: string) => {
     const newCriterias = deleteCriteriaById(criterias, id);
-    setCriterias(newCriterias);
-    // resetAlternatives(deleteIndex);
+    debounceSetCriteria(newCriterias);
   };
 
   const addAlternative = () => {
-    const score = new Array(criterias.length).fill(1);
-    setAlternatives([...alternatives, { name: "", score }]);
+    debounceSetAlternative([
+      ...alternatives,
+      { id: uuidv4(), name: `Alternative ${alternatives.length + 1}` },
+    ]);
   };
 
-  const deleteAlternative = (deleteIndex: number) => {
+  const removeAlternative = (id: string) => {
     const newAlternatives = alternatives.filter(
-      (_, index) => index !== deleteIndex
+      (alternative) => alternative.id !== id
     );
-    setAlternatives(newAlternatives);
+    debounceSetAlternative(newAlternatives);
   };
 
-  const updateAlternatives = (index: number, key: string, value: string) => {
-    const newAlternatives = [...alternatives];
-    if (key === "name") {
-      newAlternatives[index][key] = value;
-    } else {
-      newAlternatives[index]["score"][parseInt(key)] = parseFloat(value);
-    }
-    setAlternatives(newAlternatives);
+  const updateAlternatives = (id: string, update: Partial<Alternative>) => {
+    const newAlternatives = alternatives.map((alternative) =>
+      alternative.id === id ? { ...alternative, ...update } : alternative
+    );
+    debounceSetAlternative(newAlternatives);
+  };
+
+  const saveAlternatives = () => {
+    const newAlternatives = alternatives.map((alternative) => ({
+      ...alternative,
+      score: filteredCriteria,
+    }));
+    debounceSetAlternative(newAlternatives);
+    localStorage.setItem("alternatives", JSON.stringify(newAlternatives));
   };
 
   const filteredCriteria = useMemo(() => {
@@ -240,6 +250,7 @@ export const useDSSInput = () => {
     deleteCriteria,
     addAlternative,
     updateAlternatives,
-    deleteAlternative,
+    removeAlternative,
+    saveAlternatives,
   };
 };

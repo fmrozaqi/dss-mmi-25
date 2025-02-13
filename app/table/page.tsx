@@ -224,10 +224,6 @@ export default function DataTableDemo() {
     },
   ];
 
-  React.useEffect(() => {
-    console.log(rowSelection);
-  }, [rowSelection]);
-
   const table = useReactTable({
     data: dss.criterias,
     columns,
@@ -266,7 +262,7 @@ export default function DataTableDemo() {
   });
 
   return (
-    <div className="w-full px-20 pt-5">
+    <div className="w-4/5 px-20 pt-5 mx-auto">
       <div className="rounded-md border">
         <Table>
           <TableHeader>
@@ -353,6 +349,13 @@ export default function DataTableDemo() {
                 dms.updateDecisionMaker(dm.id, { role: e.target.value })
               }
             />
+            <Button
+              onClick={() => {
+                window.open(`/form/${dm.id}`, "_blank");
+              }}
+            >
+              Form
+            </Button>
             <Button onClick={() => dms.removeDecisionMaker(dm.id)}>
               Delete
             </Button>
@@ -364,8 +367,49 @@ export default function DataTableDemo() {
           Add Decision Maker
         </Button>
 
-        <Button variant="default" onClick={() => dms.saveDecisionMakers()}>
+        <Button
+          variant="default"
+          onClick={() => {
+            localStorage.removeItem("decisionMakers");
+            dms.saveDecisionMakers();
+          }}
+        >
           Save Decision Maker
+        </Button>
+      </div>
+      <div className="items-center py-4 space-y-2">
+        {dss.alternatives.map((alternative) => (
+          <div
+            key={alternative.id}
+            className="flex w-full items-center space-x-2"
+          >
+            <Input
+              type="text"
+              placeholder="Alternative Name"
+              value={alternative.name}
+              onChange={(e) =>
+                dss.updateAlternatives(alternative.id, { name: e.target.value })
+              }
+            />
+            <Button onClick={() => dss.removeAlternative(alternative.id)}>
+              Delete
+            </Button>
+          </div>
+        ))}
+      </div>
+      <div className="flex items-center py-4 space-x-2">
+        <Button variant="default" onClick={() => dss.addAlternative()}>
+          Add Alternative
+        </Button>
+
+        <Button
+          variant="default"
+          onClick={() => {
+            localStorage.removeItem("alternatives");
+            dss.saveAlternatives();
+          }}
+        >
+          Save Alternative
         </Button>
       </div>
     </div>
