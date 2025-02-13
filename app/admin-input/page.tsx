@@ -57,6 +57,13 @@ import { useDMInput } from "@/hooks/useDMInput";
 export default function AdminInput() {
   const dss = useDSSInput();
   const dms = useDMInput();
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    if (typeof window !== "undefined") {
+      setMounted(true);
+    }
+  }, []);
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -262,164 +269,170 @@ export default function AdminInput() {
   });
 
   return (
-    <div className="w-4/5 px-20 pt-5 mx-auto space-y-6">
-      {/* Table Section */}
-      <h1 className="text-2xl font-bold text-gray-800">Criteria Input</h1>
-      <div className="rounded-md border shadow-md">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                  </TableHead>
+    <>
+      {mounted ? (
+        <div className="w-4/5 px-20 pt-5 mx-auto space-y-6">
+          {/* Table Section */}
+          <h1 className="text-2xl font-bold text-gray-800">Criteria Input</h1>
+          <div className="rounded-md border shadow-md">
+            <Table>
+              <TableHeader>
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <TableRow key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => (
+                      <TableHead key={header.id}>
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
+                      </TableHead>
+                    ))}
+                  </TableRow>
                 ))}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
+              </TableHeader>
+              <TableBody>
+                {table.getRowModel().rows?.length ? (
+                  table.getRowModel().rows.map((row) => (
+                    <TableRow
+                      key={row.id}
+                      data-state={row.getIsSelected() && "selected"}
+                    >
+                      {row.getVisibleCells().map((cell) => (
+                        <TableCell key={cell.id}>
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell
+                      colSpan={columns.length}
+                      className="h-24 text-center"
+                    >
+                      No results.
                     </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </div>
+
+          {/* Criteria Actions */}
+          <div className="flex space-x-4">
+            <Button variant="default" onClick={dss.addCriteria}>
+              Add Criteria
+            </Button>
+            <Button variant="default" onClick={() => dss.saveCriterias()}>
+              Save Criteria
+            </Button>
+          </div>
+
+          {/* Alternatives List */}
+          <h1 className="text-2xl font-bold text-gray-800">
+            Alternative Input
+          </h1>
+          <div className="space-y-3">
+            {dss.alternatives.map((alternative) => (
+              <div key={alternative.id} className="flex items-center space-x-2">
+                <Input
+                  type="text"
+                  placeholder="Alternative Name"
+                  value={alternative.name}
+                  className="w-full"
+                  onChange={(e) =>
+                    dss.updateAlternatives(alternative.id, {
+                      name: e.target.value,
+                    })
+                  }
+                />
+                <Button
+                  variant="destructive"
+                  onClick={() => dss.removeAlternative(alternative.id)}
                 >
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </div>
-
-      {/* Criteria Actions */}
-      <div className="flex space-x-4">
-        <Button variant="default" onClick={dss.addCriteria}>
-          Add Criteria
-        </Button>
-        <Button
-          variant="default"
-          onClick={() =>
-            localStorage.setItem("criteriaList", JSON.stringify(dss.criterias))
-          }
-        >
-          Save Criteria
-        </Button>
-      </div>
-
-      {/* Alternatives List */}
-      <h1 className="text-2xl font-bold text-gray-800">Alternative Input</h1>
-      <div className="space-y-3">
-        {dss.alternatives.map((alternative) => (
-          <div key={alternative.id} className="flex items-center space-x-2">
-            <Input
-              type="text"
-              placeholder="Alternative Name"
-              value={alternative.name}
-              className="w-full"
-              onChange={(e) =>
-                dss.updateAlternatives(alternative.id, { name: e.target.value })
-              }
-            />
-            <Button
-              variant="destructive"
-              onClick={() => dss.removeAlternative(alternative.id)}
-            >
-              Delete
-            </Button>
+                  Delete
+                </Button>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
 
-      {/* Alternative Actions */}
-      <div className="flex space-x-4">
-        <Button variant="default" onClick={() => dss.addAlternative()}>
-          Add Alternative
-        </Button>
-        <Button
-          variant="default"
-          onClick={() => {
-            localStorage.removeItem("alternatives");
-            dss.saveAlternatives();
-          }}
-        >
-          Save Alternative
-        </Button>
-      </div>
-
-      {/* Decision Makers List */}
-      <h1 className="text-2xl font-bold text-gray-800">Decision Maker Input</h1>
-      <div className="space-y-3">
-        {dms.decisionMakers.map((dm) => (
-          <div key={dm.id} className="flex items-center space-x-2">
-            <Input
-              type="text"
-              placeholder="Decision Maker Name"
-              value={dm.name}
-              className="w-3/5"
-              onChange={(e) =>
-                dms.updateDecisionMaker(dm.id, { name: e.target.value })
-              }
-            />
-            <Input
-              type="text"
-              placeholder="Decision Maker Role"
-              value={dm.role}
-              className="w-2/5"
-              onChange={(e) =>
-                dms.updateDecisionMaker(dm.id, { role: e.target.value })
-              }
-            />
-            <Button onClick={() => window.open(`/form/${dm.id}`, "_blank")}>
-              Form
+          {/* Alternative Actions */}
+          <div className="flex space-x-4">
+            <Button variant="default" onClick={() => dss.addAlternative()}>
+              Add Alternative
             </Button>
             <Button
-              variant="destructive"
-              onClick={() => dms.removeDecisionMaker(dm.id)}
+              variant="default"
+              onClick={() => {
+                dss.removeAlternatives();
+                dss.saveAlternatives();
+              }}
             >
-              Delete
+              Save Alternative
             </Button>
           </div>
-        ))}
-      </div>
 
-      {/* Decision Maker Actions */}
-      <div className="flex space-x-4">
-        <Button variant="default" onClick={() => dms.addDecisionMaker()}>
-          Add Decision Maker
-        </Button>
-        <Button
-          variant="default"
-          onClick={() => {
-            localStorage.removeItem("decisionMakers");
-            dms.saveDecisionMakers();
-          }}
-        >
-          Save Decision Maker
-        </Button>
-      </div>
-    </div>
+          {/* Decision Makers List */}
+          <h1 className="text-2xl font-bold text-gray-800">
+            Decision Maker Input
+          </h1>
+          <div className="space-y-3">
+            {dms.decisionMakers.map((dm) => (
+              <div key={dm.id} className="flex items-center space-x-2">
+                <Input
+                  type="text"
+                  placeholder="Decision Maker Name"
+                  value={dm.name}
+                  className="w-3/5"
+                  onChange={(e) =>
+                    dms.updateDecisionMaker(dm.id, { name: e.target.value })
+                  }
+                />
+                <Input
+                  type="text"
+                  placeholder="Decision Maker Role"
+                  value={dm.role}
+                  className="w-2/5"
+                  onChange={(e) =>
+                    dms.updateDecisionMaker(dm.id, { role: e.target.value })
+                  }
+                />
+                <Button onClick={() => window.open(`/form/${dm.id}`, "_blank")}>
+                  Form
+                </Button>
+                <Button
+                  variant="destructive"
+                  onClick={() => dms.removeDecisionMaker(dm.id)}
+                >
+                  Delete
+                </Button>
+              </div>
+            ))}
+          </div>
+
+          {/* Decision Maker Actions */}
+          <div className="flex space-x-4">
+            <Button variant="default" onClick={() => dms.addDecisionMaker()}>
+              Add Decision Maker
+            </Button>
+            <Button
+              variant="default"
+              onClick={() => {
+                dms.saveDecisionMakers();
+              }}
+            >
+              Save Decision Maker
+            </Button>
+          </div>
+        </div>
+      ) : (
+        <></>
+      )}
+    </>
   );
 }

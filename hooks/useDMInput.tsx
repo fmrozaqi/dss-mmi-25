@@ -11,7 +11,10 @@ export const useDMInput = () => {
   }, 1000);
 
   useEffect(() => {
-    const storedDecisionMakers = localStorage.getItem("decisionMakers");
+    const storedDecisionMakers =
+      typeof window !== "undefined"
+        ? localStorage.getItem("decisionMakers")
+        : undefined;
     if (storedDecisionMakers) {
       debounceSetDM(JSON.parse(storedDecisionMakers));
     }
@@ -73,7 +76,9 @@ export const useDMInput = () => {
   };
 
   const saveDecisionMakers = () => {
-    localStorage.setItem("decisionMakers", JSON.stringify(decisionMakers));
+    typeof window !== "undefined"
+      ? localStorage.setItem("decisionMakers", JSON.stringify(decisionMakers))
+      : undefined;
   };
 
   const updateDecisionMaker = (id: string, update: Partial<DecisionMaker>) => {

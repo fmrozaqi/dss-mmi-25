@@ -24,3 +24,8 @@ export type DecisionMaker = {
 };
 
 export type Key = "name" | "weight" | "type";
+
+export type IdealSolution = {
+  bestCase: number;
+  worstCase: number;
+};

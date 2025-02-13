@@ -1,5 +1,4 @@
-import { IdealSolution } from "@/app/topsis/page";
-import { WeightType } from "@/types/DSSType";
+import { IdealSolution, WeightType } from "@/types/DSSType";
 
 export class TOPSIS {
   static normalizedMatrix = (matrixScore: number[][]) => {

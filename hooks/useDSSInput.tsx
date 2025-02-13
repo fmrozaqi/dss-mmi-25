@@ -12,7 +12,10 @@ export const useDSSInput = () => {
   }, 1000);
 
   useEffect(() => {
-    const criterias = localStorage.getItem("criteriaList");
+    const criterias =
+      typeof window !== "undefined"
+        ? localStorage.getItem("criteriaList")
+        : undefined;
     if (criterias) {
       debounceSetCriteria(JSON.parse(criterias));
     } else {
@@ -35,7 +38,10 @@ export const useDSSInput = () => {
   }, 1000);
 
   useEffect(() => {
-    const alternatives = localStorage.getItem("alternatives");
+    const alternatives =
+      typeof window !== "undefined"
+        ? localStorage.getItem("alternatives")
+        : undefined;
     if (alternatives) {
       debounceSetAlternative(JSON.parse(alternatives));
     } else {
@@ -167,7 +173,10 @@ export const useDSSInput = () => {
   };
 
   const getActiveState = () => {
-    const criterias = localStorage.getItem("criteriaList");
+    const criterias =
+      typeof window !== "undefined"
+        ? localStorage.getItem("criteriaList")
+        : undefined;
     if (criterias) {
       const localStorageCriterias = JSON.parse(criterias);
       const selectedRows: RowSelectionState = getSelectedRows(
@@ -238,6 +247,14 @@ export const useDSSInput = () => {
     return filterCriteria(criterias);
   }, [criterias]);
 
+  const saveCriterias = () => {
+    localStorage.setItem("criteriaList", JSON.stringify(criterias));
+  };
+
+  const removeAlternatives = () => {
+    localStorage.removeItem("alternatives");
+  };
+
   return {
     criterias,
     alternatives,
@@ -252,5 +269,7 @@ export const useDSSInput = () => {
     updateAlternatives,
     removeAlternative,
     saveAlternatives,
+    saveCriterias,
+    removeAlternatives,
   };
 };

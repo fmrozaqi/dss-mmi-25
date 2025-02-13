@@ -16,7 +16,7 @@ export function BarChartCustom({
   chartConfig,
   xAxisName,
 }: {
-  chartData: any[];
+  chartData: Record<string, string | number>[];
   chartConfig: ChartConfig;
   xAxisName: string;
 }) {
@@ -33,7 +33,7 @@ export function BarChartCustom({
         />
         <ChartTooltip content={<ChartTooltipContent />} />
         <ChartLegend content={<ChartLegendContent />} />
-        {Object.entries(chartConfig).map(([configName, val]) => (
+        {Object.entries(chartConfig).map(([configName]) => (
           <Bar
             dataKey={configName}
             fill={`var(--color-${configName})`}
