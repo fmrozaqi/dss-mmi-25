@@ -1,5 +1,6 @@
 import { Alternative, Criteria } from "@/types/DSSType";
-import { useEffect, useState } from "react";
+import { RowSelectionState } from "@tanstack/react-table";
+import { useEffect, useMemo, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 
 export const useDSSInput = () => {
@@ -68,6 +69,7 @@ export const useDSSInput = () => {
               active: false,
               name: `Sub Criteria ${criteria.subCriteria.length + 1}`,
               weight: 1,
+              type: criteria.type,
               subCriteria: [],
             },
           ],
@@ -93,7 +95,18 @@ export const useDSSInput = () => {
   ): Criteria[] {
     return criteriaList.map((criteria) => {
       if (criteria.id === id) {
-        return { ...criteria, ...updates };
+        if (updates.type) {
+          return {
+            ...criteria,
+            ...updates,
+            subCriteria: criteria.subCriteria.map(
+              (subCriteria) =>
+                updateCriteriaById([subCriteria], subCriteria.id, updates)[0]
+            ),
+          };
+        } else {
+          return { ...criteria, ...updates };
+        }
       }
 
       return {
@@ -113,38 +126,55 @@ export const useDSSInput = () => {
 
   const updateActiveStatusById = (
     criteriaList: Criteria[],
-    id: string,
-    active: boolean
+    tableId: string,
+    selectedRows: RowSelectionState
   ): Criteria[] => {
-    return criteriaList.map((criteria) => {
-      if (criteria.id === id) {
-        return {
-          ...criteria,
-          active: active,
-          subCriteria: criteria.subCriteria.map(
-            (subCriteria) =>
-              updateActiveStatusById([subCriteria], subCriteria.id, active)[0]
-          ),
-        };
-      }
-
+    return criteriaList.map((criteria, idx) => {
+      const id = tableId ? [tableId, idx.toString()].join(".") : idx.toString();
       return {
         ...criteria,
-        subCriteria: updateActiveStatusById(criteria.subCriteria, id, active),
+        active: id in selectedRows,
+        subCriteria: updateActiveStatusById(
+          criteria.subCriteria,
+          id,
+          selectedRows
+        ),
       };
     });
   };
 
-  const updateActiveStatus = (id: string, active: boolean) => {
-    const newCriterias = updateActiveStatusById(criterias, id, active);
+  const updateActiveStatus = (selectedRows: RowSelectionState) => {
+    const newCriterias = updateActiveStatusById(criterias, "", selectedRows);
     setCriterias(newCriterias);
   };
 
-  const updateActiveStatusAll = (active: boolean) => {
-    const newCriterias = criterias.map(
-      (criteria) => updateActiveStatusById([criteria], criteria.id, active)[0]
-    );
-    setCriterias(newCriterias);
+  const getSelectedRows = (
+    criteriaList: Criteria[],
+    tableId: string,
+    selectedRows: RowSelectionState
+  ) => {
+    criteriaList.forEach((criteria, idx) => {
+      const id = tableId ? [tableId, idx.toString()].join(".") : idx.toString();
+      if (criteria.active) {
+        selectedRows[id] = true;
+      }
+      selectedRows = getSelectedRows(criteria.subCriteria, id, selectedRows);
+    });
+    return selectedRows;
+  };
+
+  const getActiveState = () => {
+    const criterias = localStorage.getItem("criteriaList");
+    if (criterias) {
+      const localStorageCriterias = JSON.parse(criterias);
+      const selectedRows: RowSelectionState = getSelectedRows(
+        localStorageCriterias,
+        "",
+        {}
+      );
+      return selectedRows;
+    }
+    return {};
   };
 
   function deleteCriteriaById(
@@ -187,14 +217,26 @@ export const useDSSInput = () => {
     setAlternatives(newAlternatives);
   };
 
+  const filteredCriteria = useMemo(() => {
+    const filterCriteria = (criterias: Criteria[]): Criteria[] =>
+      criterias
+        .filter((criteria) => criteria.active)
+        .map((criteria) => ({
+          ...criteria,
+          subCriteria: filterCriteria(criteria.subCriteria),
+        }));
+    return filterCriteria(criterias);
+  }, [criterias]);
+
   return {
     criterias,
     alternatives,
+    filteredCriteria,
     addCriteria,
     addSubCriteria,
     updateCriterias,
     updateActiveStatus,
-    updateActiveStatusAll,
+    getActiveState,
     deleteCriteria,
     addAlternative,
     updateAlternatives,

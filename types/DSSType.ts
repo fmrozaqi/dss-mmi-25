@@ -3,7 +3,7 @@ export type Criteria = {
   active: boolean;
   name: string;
   weight: number;
-  type?: "benefit" | "cost";
+  type: "benefit" | "cost";
   subCriteria: Criteria[];
 };
 

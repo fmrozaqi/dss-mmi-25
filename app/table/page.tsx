@@ -5,6 +5,7 @@ import {
   ColumnDef,
   ColumnFiltersState,
   ExpandedState,
+  RowSelectionState,
   SortingState,
   VisibilityState,
   flexRender,
@@ -62,7 +63,9 @@ export default function DataTableDemo() {
   );
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = React.useState({});
+  const [rowSelection, setRowSelection] = React.useState<RowSelectionState>(
+    dss.getActiveState()
+  );
 
   const [expanded, setExpanded] = React.useState<ExpandedState>(true);
 
@@ -75,20 +78,14 @@ export default function DataTableDemo() {
             table.getIsAllPageRowsSelected() ||
             (table.getIsSomePageRowsSelected() && "indeterminate")
           }
-          onCheckedChange={(value) => {
-            table.toggleAllPageRowsSelected(!!value);
-            dss.updateActiveStatusAll(!!value);
-          }}
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
           aria-label="Select all"
         />
       ),
       cell: ({ row }) => (
         <Checkbox
           checked={row.getIsSelected()}
-          onCheckedChange={(value) => {
-            row.toggleSelected(!!value);
-            dss.updateActiveStatus(row.original.id, !!value);
-          }}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
           aria-label="Select row"
         />
       ),
@@ -107,7 +104,6 @@ export default function DataTableDemo() {
         </Button>
       ),
       cell: ({ row }) => (
-        //   <div className="capitalize">{row.getValue("status")}</div>
         <div className="flex" style={{ paddingLeft: `${row.depth * 2}rem` }}>
           {row.getCanExpand() ? (
             <Button variant="ghost" onClick={row.getToggleExpandedHandler()}>
@@ -229,7 +225,7 @@ export default function DataTableDemo() {
   ];
 
   React.useEffect(() => {
-    console.log(dss.criterias);
+    console.log(rowSelection);
   }, [rowSelection]);
 
   const table = useReactTable({
@@ -243,7 +239,21 @@ export default function DataTableDemo() {
     getFilteredRowModel: getFilteredRowModel(),
     getExpandedRowModel: getExpandedRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setRowSelection,
+    onRowSelectionChange: (updater) => {
+      setRowSelection((old) => {
+        const newValue = updater instanceof Function ? updater(old) : updater;
+        const selectedRows: RowSelectionState = {};
+        for (const key in newValue) {
+          const parentKey = key.split(".").slice(0, -1).join(".");
+          if (!parentKey || parentKey in selectedRows) {
+            selectedRows[key] = newValue[key];
+          }
+        }
+        dss.updateActiveStatus(selectedRows);
+
+        return selectedRows;
+      });
+    },
     onExpandedChange: setExpanded,
     getSubRows: (row) => row.subCriteria,
     state: {
