@@ -124,22 +124,25 @@ export default function DataTableDemo({ params }: PageProps) {
     {
       accessorKey: "score",
       header: () => <div className="text-center">Score</div>,
-      cell: ({ row }) => {
+      cell: ({ row, getValue }) => {
+        const [value, setValue] = React.useState(getValue() as number);
+
         return (
           <div className="w-full">
             {row.original.subCriteria.length === 0 && (
               <Input
                 className="w-20 mx-auto"
                 type="number"
-                value={row.original.score}
-                onChange={(e) =>
+                value={value}
+                onBlur={() =>
                   dms.updateScore(
                     id,
                     selectedAlternative,
                     row.original.id,
-                    parseInt(e.target.value)
+                    value
                   )
                 }
+                onChange={(e) => setValue(parseInt(e.target.value))}
               />
             )}
           </div>

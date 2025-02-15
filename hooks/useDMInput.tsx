@@ -1,14 +1,9 @@
 import { Criteria, DecisionMaker } from "@/types/DSSType";
 import { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { useDebouncedCallback } from "use-debounce";
 
 export const useDMInput = () => {
   const [decisionMakers, setDecisionMakers] = useState<DecisionMaker[]>([]);
-
-  const debounceSetDM = useDebouncedCallback((value) => {
-    setDecisionMakers(value);
-  }, 1000);
 
   useEffect(() => {
     const storedDecisionMakers =
@@ -16,12 +11,12 @@ export const useDMInput = () => {
         ? localStorage.getItem("decisionMakers")
         : undefined;
     if (storedDecisionMakers) {
-      debounceSetDM(JSON.parse(storedDecisionMakers));
+      setDecisionMakers(JSON.parse(storedDecisionMakers));
     }
   }, []);
 
   const addDecisionMaker = () => {
-    debounceSetDM([
+    setDecisionMakers([
       ...decisionMakers,
       {
         id: uuidv4(),
@@ -72,7 +67,7 @@ export const useDMInput = () => {
       return dm;
     });
 
-    debounceSetDM(newDM);
+    setDecisionMakers(newDM);
   };
 
   const saveDecisionMakers = () => {

@@ -2,14 +2,9 @@ import { Alternative, Criteria } from "@/types/DSSType";
 import { RowSelectionState } from "@tanstack/react-table";
 import { useEffect, useMemo, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { useDebouncedCallback } from "use-debounce";
 
 export const useDSSInput = () => {
   const [criterias, setCriterias] = useState<Criteria[]>([]);
-
-  const debounceSetCriteria = useDebouncedCallback((value) => {
-    setCriterias(value);
-  }, 1000);
 
   useEffect(() => {
     const criterias =
@@ -17,9 +12,9 @@ export const useDSSInput = () => {
         ? localStorage.getItem("criteriaList")
         : undefined;
     if (criterias) {
-      debounceSetCriteria(JSON.parse(criterias));
+      setCriterias(JSON.parse(criterias));
     } else {
-      debounceSetCriteria([
+      setCriterias([
         {
           id: uuidv4(),
           active: false,
@@ -33,9 +28,6 @@ export const useDSSInput = () => {
   }, []);
 
   const [alternatives, setAlternatives] = useState<Alternative[]>([]);
-  const debounceSetAlternative = useDebouncedCallback((value) => {
-    setAlternatives(value);
-  }, 1000);
 
   useEffect(() => {
     const alternatives =
@@ -43,14 +35,14 @@ export const useDSSInput = () => {
         ? localStorage.getItem("alternatives")
         : undefined;
     if (alternatives) {
-      debounceSetAlternative(JSON.parse(alternatives));
+      setAlternatives(JSON.parse(alternatives));
     } else {
-      debounceSetAlternative([{ id: uuidv4(), name: "Alternative 1" }]);
+      setAlternatives([{ id: uuidv4(), name: "Alternative 1" }]);
     }
   }, []);
 
   const addCriteria = () => {
-    debounceSetCriteria([
+    setCriterias([
       ...criterias,
       {
         id: uuidv4(),
@@ -94,7 +86,7 @@ export const useDSSInput = () => {
 
   const addSubCriteria = (id: string) => {
     const newCriterias = addSubCriteriaById(criterias, id);
-    debounceSetCriteria(newCriterias);
+    setCriterias(newCriterias);
   };
 
   function updateCriteriaById(
@@ -154,7 +146,7 @@ export const useDSSInput = () => {
 
   const updateActiveStatus = (selectedRows: RowSelectionState) => {
     const newCriterias = updateActiveStatusById(criterias, "", selectedRows);
-    debounceSetCriteria(newCriterias);
+    setCriterias(newCriterias);
   };
 
   const getSelectedRows = (
@@ -203,11 +195,11 @@ export const useDSSInput = () => {
 
   const deleteCriteria = (id: string) => {
     const newCriterias = deleteCriteriaById(criterias, id);
-    debounceSetCriteria(newCriterias);
+    setCriterias(newCriterias);
   };
 
   const addAlternative = () => {
-    debounceSetAlternative([
+    setAlternatives([
       ...alternatives,
       { id: uuidv4(), name: `Alternative ${alternatives.length + 1}` },
     ]);
@@ -217,7 +209,7 @@ export const useDSSInput = () => {
     const newAlternatives = alternatives.filter(
       (alternative) => alternative.id !== id
     );
-    debounceSetAlternative(newAlternatives);
+    setAlternatives(newAlternatives);
   };
 
   const updateAlternatives = (id: string, update: Partial<Alternative>) => {
