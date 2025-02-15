@@ -4,6 +4,7 @@ import {
   getCoreRowModel,
   flexRender,
   ColumnDef,
+  getExpandedRowModel,
 } from "@tanstack/react-table";
 import { Criteria } from "@/types/DSSType";
 import {
@@ -14,13 +15,22 @@ import {
   TableHeader,
   TableRow,
 } from "./table";
+import { Button } from "./button";
+import { ChevronDown, ChevronRight } from "lucide-react";
 
 const CriteriaTable: React.FC<{ data: Criteria[] }> = ({ data }) => {
   const columns: ColumnDef<Criteria>[] = [
     {
       accessorKey: "name",
-      header: "Name",
-      cell: (info) => info.getValue(),
+      header: "Criteria",
+      cell: (info) => (
+        <div
+          className="flex"
+          style={{ paddingLeft: `${info.row.depth * 1.1}rem` }}
+        >
+          {info.getValue() as string}
+        </div>
+      ),
     },
     {
       accessorKey: "weight",
@@ -34,17 +44,15 @@ const CriteriaTable: React.FC<{ data: Criteria[] }> = ({ data }) => {
     },
   ];
 
-  const flattenCriteria = (criteria: Criteria[], depth = 0): Criteria[] => {
-    return criteria.flatMap((criterion) => [
-      { ...criterion, depth },
-      ...flattenCriteria(criterion.subCriteria, depth + 1),
-    ]);
-  };
-
   const table = useReactTable({
-    data: flattenCriteria(data),
+    data: data,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    getExpandedRowModel: getExpandedRowModel(),
+    getSubRows: (row) => row.subCriteria,
+    state: {
+      expanded: true,
+    },
   });
 
   return (
