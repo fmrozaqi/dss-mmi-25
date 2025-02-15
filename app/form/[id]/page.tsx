@@ -46,6 +46,8 @@ import { Criteria } from "@/types/DSSType";
 import { useDSSInput } from "@/hooks/useDSSInput";
 import { use } from "react";
 import { useDMInput } from "@/hooks/useDMInput";
+import { Toaster } from "@/components/ui/sonner";
+import { toast } from "sonner";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -176,6 +178,7 @@ export default function DataTableDemo({ params }: PageProps) {
 
   return (
     <div className="w-4/5 px-20 pt-5 mx-auto">
+      <Toaster />
       <div>
         <Card>
           <CardHeader>
@@ -261,7 +264,15 @@ export default function DataTableDemo({ params }: PageProps) {
         </div>
       )}
       <div className="flex items-center py-4 space-x-2">
-        <Button variant="default" onClick={() => dms.saveDecisionMakers()}>
+        <Button
+          variant="default"
+          onClick={() => {
+            dms.saveDecisionMakers();
+            toast("Saved", {
+              description: "Nilai DM telah disimpan",
+            });
+          }}
+        >
           Save Decision Maker
         </Button>
       </div>
