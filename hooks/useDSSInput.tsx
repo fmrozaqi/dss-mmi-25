@@ -232,7 +232,7 @@ export const useDSSInput = () => {
       ...alternative,
       score: filteredCriteria,
     }));
-    debounceSetAlternative(newAlternatives);
+    setAlternatives(newAlternatives);
     localStorage.setItem("alternatives", JSON.stringify(newAlternatives));
   };
 

@@ -60,18 +60,6 @@ export default function DataTableDemo({ params }: PageProps) {
 
   const { id } = use(params);
 
-  React.useEffect(() => {
-    if (
-      dms.getDecisionMakerById(id) &&
-      (!dms.getDecisionMakerById(id)?.alternatives ||
-        !dms.getDecisionMakerById(id)?.alternatives?.length)
-    ) {
-      dms.updateDecisionMaker(id, {
-        alternatives: dss.alternatives,
-      });
-    }
-  }, [dms, dss.alternatives, id]);
-
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []

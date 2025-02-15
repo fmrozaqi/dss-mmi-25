@@ -81,6 +81,19 @@ export const useDMInput = () => {
       : undefined;
   };
 
+  const saveFormDecisionMakers = () => {
+    const newDecisionMakers = decisionMakers.map((dm) => {
+      dm.alternatives = JSON.parse(localStorage.getItem("alternatives") || "");
+      return dm;
+    });
+    typeof window !== "undefined"
+      ? localStorage.setItem(
+          "decisionMakers",
+          JSON.stringify(newDecisionMakers)
+        )
+      : undefined;
+  };
+
   const updateDecisionMaker = (id: string, update: Partial<DecisionMaker>) => {
     setDecisionMakers((prev) =>
       prev.map((dm) => (dm.id === id ? { ...dm, ...update } : dm))
@@ -99,6 +112,7 @@ export const useDMInput = () => {
     decisionMakers,
     addDecisionMaker,
     saveDecisionMakers,
+    saveFormDecisionMakers,
     updateDecisionMaker,
     removeDecisionMaker,
     getDecisionMakerById,

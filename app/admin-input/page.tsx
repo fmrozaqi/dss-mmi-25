@@ -53,6 +53,8 @@ import {
 import { Criteria } from "@/types/DSSType";
 import { useDSSInput } from "@/hooks/useDSSInput";
 import { useDMInput } from "@/hooks/useDMInput";
+import { toast } from "sonner";
+import { Toaster } from "@/components/ui/sonner";
 
 export default function AdminInput() {
   const dss = useDSSInput();
@@ -273,6 +275,7 @@ export default function AdminInput() {
       {mounted ? (
         <div className="w-4/5 px-20 pt-5 mx-auto space-y-6">
           {/* Table Section */}
+          <Toaster />
           <h1 className="text-2xl font-bold text-gray-800">Criteria Input</h1>
           <div className="rounded-md border shadow-md">
             <Table>
@@ -328,7 +331,15 @@ export default function AdminInput() {
             <Button variant="default" onClick={dss.addCriteria}>
               Add Criteria
             </Button>
-            <Button variant="default" onClick={() => dss.saveCriterias()}>
+            <Button
+              variant="default"
+              onClick={() => {
+                dss.saveCriterias();
+                toast("Saved", {
+                  description: "Criteria telah disimpan",
+                });
+              }}
+            >
               Save Criteria
             </Button>
           </div>
@@ -369,8 +380,10 @@ export default function AdminInput() {
             <Button
               variant="default"
               onClick={() => {
-                dss.removeAlternatives();
                 dss.saveAlternatives();
+                toast("Saved", {
+                  description: "Alternative telah disimpan",
+                });
               }}
             >
               Save Alternative
@@ -423,7 +436,10 @@ export default function AdminInput() {
             <Button
               variant="default"
               onClick={() => {
-                dms.saveDecisionMakers();
+                dms.saveFormDecisionMakers();
+                toast("Saved", {
+                  description: "DM telah disimpan",
+                });
               }}
             >
               Save Decision Maker
