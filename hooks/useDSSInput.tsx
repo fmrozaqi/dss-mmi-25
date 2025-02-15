@@ -130,7 +130,7 @@ export const useDSSInput = () => {
     updates: Partial<Omit<Criteria, "id" | "subCriteria">>
   ) => {
     const newCriterias = updateCriteriaById(criterias, id, updates);
-    debounceSetCriteria(newCriterias);
+    setCriterias(newCriterias);
   };
 
   const updateActiveStatusById = (
@@ -224,7 +224,7 @@ export const useDSSInput = () => {
     const newAlternatives = alternatives.map((alternative) =>
       alternative.id === id ? { ...alternative, ...update } : alternative
     );
-    debounceSetAlternative(newAlternatives);
+    setAlternatives(newAlternatives);
   };
 
   const saveAlternatives = () => {
