@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import {
+  CellContext,
   ColumnDef,
   ColumnFiltersState,
   ExpandedState,
@@ -61,6 +62,50 @@ export default function AdminInput() {
   const dms = useDMInput();
   const [mounted, setMounted] = React.useState(false);
 
+  const NameCell = ({ row, getValue }: CellContext<Criteria, unknown>) => {
+    const [value, setValue] = React.useState(getValue() as string);
+
+    return (
+      <div className="flex" style={{ paddingLeft: `${row.depth * 2}rem` }}>
+        {row.getCanExpand() ? (
+          <Button variant="ghost" onClick={row.getToggleExpandedHandler()}>
+            {row.getIsExpanded() ? <ChevronDown /> : <ChevronRight />}
+          </Button>
+        ) : (
+          <Button variant="ghost" className="cursor-auto">
+            <Dot />
+          </Button>
+        )}
+        <Input
+          placeholder="Criteria name..."
+          value={value}
+          onBlur={() => dss.updateCriterias(row.original.id, { name: value })}
+          onChange={(e) => setValue(e.target.value)}
+        />
+      </div>
+    );
+  };
+
+  const WeightCell = ({ row, getValue }: CellContext<Criteria, unknown>) => {
+    const [value, setValue] = React.useState(getValue() as number);
+    return (
+      <div className="w-full">
+        <Input
+          value={value}
+          className="w-20 mx-auto"
+          type="number"
+          step="0.1"
+          onChange={(e) => setValue(parseFloat(e.target.value))}
+          onBlur={() =>
+            dss.updateCriterias(row.original.id, {
+              weight: value,
+            })
+          }
+        />
+      </div>
+    );
+  };
+
   React.useEffect(() => {
     if (typeof window !== "undefined") {
       setMounted(true);
@@ -112,54 +157,12 @@ export default function AdminInput() {
           {table.getIsAllRowsExpanded() ? <ChevronDown /> : <ChevronRight />}
         </Button>
       ),
-      cell: ({ row, getValue }) => {
-        const [value, setValue] = React.useState(getValue() as string);
-
-        return (
-          <div className="flex" style={{ paddingLeft: `${row.depth * 2}rem` }}>
-            {row.getCanExpand() ? (
-              <Button variant="ghost" onClick={row.getToggleExpandedHandler()}>
-                {row.getIsExpanded() ? <ChevronDown /> : <ChevronRight />}
-              </Button>
-            ) : (
-              <Button variant="ghost" className="cursor-auto">
-                <Dot />
-              </Button>
-            )}
-            <Input
-              placeholder="Criteria name..."
-              value={value}
-              onBlur={() =>
-                dss.updateCriterias(row.original.id, { name: value })
-              }
-              onChange={(e) => setValue(e.target.value)}
-            />
-          </div>
-        );
-      },
+      cell: NameCell,
     },
     {
       accessorKey: "weight",
       header: () => <div className="text-center">Weight</div>,
-      cell: ({ row, getValue }) => {
-        const [value, setValue] = React.useState(getValue() as number);
-        return (
-          <div className="w-full">
-            <Input
-              value={value}
-              className="w-20 mx-auto"
-              type="number"
-              step="0.1"
-              onChange={(e) => setValue(parseFloat(e.target.value))}
-              onBlur={() =>
-                dss.updateCriterias(row.original.id, {
-                  weight: value,
-                })
-              }
-            />
-          </div>
-        );
-      },
+      cell: WeightCell,
     },
     {
       accessorKey: "type",

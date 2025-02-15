@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import {
+  CellContext,
   ColumnDef,
   ColumnFiltersState,
   ExpandedState,
@@ -78,6 +79,26 @@ export default function DataTableDemo({ params }: PageProps) {
       ?.alternatives?.find((alternative) => alternative.id === alternativeId);
   };
 
+  const ScoreCell = ({ row, getValue }: CellContext<Criteria, unknown>) => {
+    const [value, setValue] = React.useState(getValue() as number);
+
+    return (
+      <div className="w-full">
+        {row.original.subCriteria.length === 0 && (
+          <Input
+            className="w-20 mx-auto"
+            type="number"
+            value={value}
+            onBlur={() =>
+              dms.updateScore(id, selectedAlternative, row.original.id, value)
+            }
+            onChange={(e) => setValue(parseInt(e.target.value))}
+          />
+        )}
+      </div>
+    );
+  };
+
   const columns: ColumnDef<Criteria>[] = [
     {
       accessorKey: "name",
@@ -124,30 +145,7 @@ export default function DataTableDemo({ params }: PageProps) {
     {
       accessorKey: "score",
       header: () => <div className="text-center">Score</div>,
-      cell: ({ row, getValue }) => {
-        const [value, setValue] = React.useState(getValue() as number);
-
-        return (
-          <div className="w-full">
-            {row.original.subCriteria.length === 0 && (
-              <Input
-                className="w-20 mx-auto"
-                type="number"
-                value={value}
-                onBlur={() =>
-                  dms.updateScore(
-                    id,
-                    selectedAlternative,
-                    row.original.id,
-                    value
-                  )
-                }
-                onChange={(e) => setValue(parseInt(e.target.value))}
-              />
-            )}
-          </div>
-        );
-      },
+      cell: ScoreCell,
     },
     {
       accessorKey: "note",
