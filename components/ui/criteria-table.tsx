@@ -15,8 +15,6 @@ import {
   TableHeader,
   TableRow,
 } from "./table";
-import { Button } from "./button";
-import { ChevronDown, ChevronRight } from "lucide-react";
 
 const CriteriaTable: React.FC<{ data: Criteria[] }> = ({ data }) => {
   const columns: ColumnDef<Criteria>[] = [
